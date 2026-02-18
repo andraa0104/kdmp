@@ -1,0 +1,634 @@
+.daftar-anggota-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 50%, #fefce8 100%);
+  padding: 2rem 1rem;
+}
+
+.daftar-header {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+}
+
+.back-link {
+  display: inline-block;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: #dc2626;
+}
+
+.daftar-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.form-header {
+  text-align: center;
+  padding: 3rem 2rem 2rem;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.form-header h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1f2937;
+  margin: 1rem 0 0.5rem;
+}
+
+.form-header p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  padding: 2.5rem 3rem;
+  background: white;
+  position: relative;
+}
+
+.step-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.step-wrapper:last-child {
+  flex: 0;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+.step-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  border: 3px solid #e5e7eb;
+}
+
+.step-item.active .step-circle {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #fbbf24 100%);
+  color: white;
+  border-color: #dc2626;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+  transform: scale(1.1);
+}
+
+.step-item.completed .step-circle {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.step-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.step-item.active .step-label {
+  color: #dc2626;
+}
+
+.step-item.completed .step-label {
+  color: #10b981;
+}
+
+.step-line {
+  flex: 1;
+  height: 3px;
+  background: #e5e7eb;
+  margin: 0 1rem;
+  position: relative;
+  top: -30px;
+}
+
+.step-line.completed {
+  background: #10b981;
+}
+
+/* Form */
+.daftar-form {
+  padding: 2rem 3rem 3rem;
+}
+
+.form-step {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-content h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.step-description {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  font-family: inherit;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.form-group input.error,
+.form-group select.error {
+  border-color: #ef4444;
+}
+
+.error-message {
+  display: block;
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.form-group small {
+  display: block;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* Radio Cards */
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.radio-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.radio-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-content {
+  display: block;
+  padding: 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s;
+  background: white;
+}
+
+.radio-card input[type="radio"]:checked + .radio-content {
+  border-color: #dc2626;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.15);
+}
+
+.radio-title {
+  font-weight: 600;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.radio-card input[type="radio"]:checked + .radio-content .radio-title {
+  color: #dc2626;
+}
+
+/* Info Box */
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border-left: 4px solid #6366f1;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+}
+
+.info-box.success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border-left-color: #10b981;
+}
+
+.info-box svg {
+  color: #6366f1;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.info-box.success svg {
+  color: #10b981;
+}
+
+.info-box strong {
+  display: block;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.info-box p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Disclaimer Box */
+.disclaimer-box {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border: 2px solid #fbbf24;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.disclaimer-box h3 {
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.disclaimer-content p {
+  color: #374151;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.disclaimer-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.disclaimer-content ul li {
+  padding: 0.75rem 0;
+  padding-left: 2rem;
+  position: relative;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.disclaimer-content ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #dc2626;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.disclaimer-content ul li strong {
+  color: #dc2626;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s;
+}
+
+.checkbox-label:hover {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.02);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #dc2626;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.checkbox-label span {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+/* Navigation */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #f3f4f6;
+}
+
+.btn-prev,
+.btn-next,
+.btn-submit {
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-prev {
+  background: white;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.btn-prev:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateX(-3px);
+}
+
+.btn-next,
+.btn-submit {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #fbbf24 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  margin-left: auto;
+}
+
+.btn-next:hover,
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-submit:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .daftar-anggota-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .stepper {
+    padding: 1.5rem 1rem;
+    overflow-x: auto;
+    gap: 0.5rem;
+  }
+
+  .step-circle {
+    width: 50px;
+    height: 50px;
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+    max-width: 70px;
+  }
+
+  .step-line {
+    margin: 0 0.25rem;
+    min-width: 20px;
+  }
+
+  .daftar-form {
+    padding: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-group {
+    grid-template-columns: 1fr;
+  }
+
+  .form-navigation {
+    flex-direction: column;
+  }
+
+  .btn-next,
+  .btn-submit {
+    margin-left: 0;
+  }
+
+  .btn-prev,
+  .btn-next,
+  .btn-submit {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .step-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .step-description {
+    font-size: 0.9rem;
+  }
+
+  .form-header {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .form-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .disclaimer-box {
+    padding: 1.5rem;
+  }
+
+  .disclaimer-box h3 {
+    font-size: 1.1rem;
+  }
+
+  .disclaimer-content ul li {
+    font-size: 0.9rem;
+    padding-left: 1.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-card {
+    border-radius: 16px;
+  }
+
+  .stepper {
+    padding: 1rem 0.75rem;
+  }
+
+  .step-circle {
+    width: 45px;
+    height: 45px;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    max-width: 60px;
+  }
+
+  .daftar-form {
+    padding: 1rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-prev,
+  .btn-next,
+  .btn-submit {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .info-box {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .disclaimer-box {
+    padding: 1.25rem;
+  }
+
+  .checkbox-label {
+    padding: 0.85rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .form-header p {
+    font-size: 0.9rem;
+  }
+
+  .step-content h2 {
+    font-size: 1.35rem;
+  }
+
+  .stepper {
+    padding: 1rem 0.5rem;
+  }
+
+  .step-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .step-circle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .step-label {
+    font-size: 0.65rem;
+    max-width: 50px;
+  }
+
+  .disclaimer-content ul li {
+    font-size: 0.85rem;
+  }
+}
