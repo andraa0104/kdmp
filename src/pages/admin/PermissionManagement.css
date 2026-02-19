@@ -1,0 +1,196 @@
+.permission-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.permission-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.role-selector {
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.role-selector label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.role-select {
+  padding: 0.875rem 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 300px;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.permission-table-wrapper {
+  overflow-x: auto;
+}
+
+.permission-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.permission-table thead {
+  background: #f9fafb;
+}
+
+.permission-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.permission-table th:not(:first-child) {
+  text-align: center;
+}
+
+.permission-table td {
+  padding: 1rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.permission-table td:not(:first-child) {
+  text-align: center;
+}
+
+.menu-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked ~ .checkmark {
+  background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+  border-color: #dc2626;
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked ~ .checkmark::after {
+  content: '✓';
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.checkbox-wrapper:hover .checkmark {
+  border-color: #dc2626;
+}
+
+.permission-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Dark Mode */
+html.dark .permission-card {
+  background: #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .role-selector label {
+  color: #cbd5e1;
+}
+
+html.dark .role-select {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f9fafb;
+}
+
+html.dark .role-select:focus {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+}
+
+html.dark .permission-table thead {
+  background: #0f172a;
+}
+
+html.dark .permission-table th {
+  color: #94a3b8;
+}
+
+html.dark .permission-table td {
+  border-top-color: #334155;
+}
+
+html.dark .menu-name {
+  color: #f9fafb;
+}
+
+html.dark .checkmark {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .permission-table tbody tr:hover {
+  background: #0f172a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .role-selector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .role-select {
+    width: 100%;
+  }
+
+  .permission-table {
+    font-size: 0.85rem;
+  }
+
+  .permission-table th,
+  .permission-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}

@@ -1,0 +1,557 @@
+.role-management-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.role-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.role-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--role-color);
+}
+
+.role-card.red {
+  --role-color: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+}
+
+.role-card.blue {
+  --role-color: #3b82f6;
+}
+
+.role-card.green {
+  --role-color: #10b981;
+}
+
+.role-card.yellow {
+  --role-color: #f59e0b;
+}
+
+.role-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.role-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
+}
+
+.role-card.blue .role-icon {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.role-card.green .role-icon {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.role-card.yellow .role-icon {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.role-count {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.role-card h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.role-card > p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.jabatan-list h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+}
+
+.jabatan-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.jabatan-tag {
+  padding: 0.4rem 0.75rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Dark Mode */
+html.dark .role-card {
+  background: #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .role-card h3 {
+  color: #f9fafb;
+}
+
+html.dark .role-card > p {
+  color: #94a3b8;
+}
+
+html.dark .role-count {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+html.dark .jabatan-list h4 {
+  color: #94a3b8;
+}
+
+html.dark .jabatan-tag {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .roles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* System Badge */
+.system-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #fef3c7;
+  border-radius: 10px;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.system-badge svg {
+  flex-shrink: 0;
+}
+
+/* Jabatan Header */
+.jabatan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.btn-add-jabatan {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-add-jabatan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* Jabatan Items */
+.jabatan-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.jabatan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.jabatan-item:hover {
+  background: #f3f4f6;
+}
+
+.jabatan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.jabatan-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.9rem;
+}
+
+.jabatan-desc {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.jabatan-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.btn-icon-small {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-small:hover:not(:disabled) {
+  background: white;
+  color: #1f2937;
+}
+
+.btn-icon-small.danger:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-icon-small:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  width: 90%;
+  max-width: 500px;
+  animation: slideUp 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.btn-close:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-field,
+.input-disabled {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.input-disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+textarea.input-field {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.delete-warning {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.delete-warning svg {
+  color: #f59e0b;
+  margin-bottom: 1rem;
+}
+
+.delete-warning p {
+  font-size: 1.05rem;
+  color: #1f2937;
+}
+
+.warning-box {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #fef3c7;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.warning-box svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.warning-box strong {
+  color: #92400e;
+}
+
+.warning-box ul {
+  margin: 0.5rem 0 0 1.25rem;
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.btn-primary.danger {
+  background: #dc2626;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dark Mode */
+html.dark .system-badge {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+html.dark .jabatan-item {
+  background: #0f172a;
+}
+
+html.dark .jabatan-item:hover {
+  background: #1e293b;
+}
+
+html.dark .jabatan-name {
+  color: #f9fafb;
+}
+
+html.dark .jabatan-desc {
+  color: #94a3b8;
+}
+
+html.dark .btn-icon-small {
+  color: #94a3b8;
+}
+
+html.dark .btn-icon-small:hover:not(:disabled) {
+  background: #1e293b;
+  color: #f9fafb;
+}
+
+html.dark .modal {
+  background: #1e293b;
+}
+
+html.dark .modal-header {
+  border-bottom-color: #334155;
+}
+
+html.dark .modal-header h3 {
+  color: #f9fafb;
+}
+
+html.dark .modal-footer {
+  border-top-color: #334155;
+}
+
+html.dark .form-group label {
+  color: #cbd5e1;
+}
+
+html.dark .input-field {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f9fafb;
+}
+
+html.dark .input-field:focus {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+}
+
+html.dark .input-disabled {
+  background: #0f172a;
+  color: #64748b;
+}
+
+html.dark .delete-warning p {
+  color: #f9fafb;
+}
+
+html.dark .warning-box {
+  background: rgba(245, 158, 11, 0.2);
+}

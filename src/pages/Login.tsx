@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Logo from '../components/Logo';
+import kdmpLogo from '../assets/logo kdmp purwajaya remove BG HD.png';
 import './Login.css';
 
 const Login = () => {
@@ -27,7 +28,8 @@ const Login = () => {
           <div className="login-form-wrapper">
             <div className="login-header">
               <div className="login-logo">
-                <Logo size={60} />
+                <Logo size={80} />
+                <img src={kdmpLogo} alt="KDMP Purwajaya" className="kdmp-logo" />
               </div>
               <h1>Portal Anggota</h1>
               <p>Masuk ke akun anggota Koperasi Merah Putih</p>

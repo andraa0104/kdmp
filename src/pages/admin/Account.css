@@ -1,0 +1,155 @@
+.account-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper svg:first-child {
+  position: absolute;
+  left: 1rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 0.875rem 3rem 0.875rem 3rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  font-family: inherit;
+  background: white;
+  color: #1f2937;
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.toggle-password:hover {
+  color: #dc2626;
+  background: #f3f4f6;
+}
+
+.form-actions {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+/* Dark Mode */
+html.dark .form-group label {
+  color: #cbd5e1;
+}
+
+html.dark .input-wrapper input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f9fafb;
+}
+
+html.dark .input-wrapper input:focus {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+}
+
+html.dark .input-wrapper svg:first-child {
+  color: #64748b;
+}
+
+html.dark .toggle-password {
+  color: #64748b;
+}
+
+html.dark .toggle-password:hover {
+  color: #fbbf24;
+  background: #1e293b;
+}
+
+html.dark .form-actions {
+  border-top-color: #334155;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+  }
+
+  .btn-save {
+    width: 100%;
+    justify-content: center;
+  }
+}

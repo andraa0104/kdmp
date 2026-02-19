@@ -1,0 +1,51 @@
+.superadmin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+  background: #f8fafc;
+}
+
+.main-content.collapsed {
+  margin-left: 80px;
+}
+
+.content-area {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background: #f8fafc;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    padding: 1rem;
+  }
+}
+
+/* Dark Mode */
+html.dark .superadmin-layout {
+  background: #0f172a;
+}
+
+html.dark .main-content {
+  background: #0f172a;
+}
+
+html.dark .content-area {
+  background: #0f172a;
+}

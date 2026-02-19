@@ -1,0 +1,255 @@
+.admin-header {
+  position: sticky;
+  top: 0;
+  height: 80px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.collapse-toggle {
+  background: none;
+  border: none;
+  color: #1f2937;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-toggle:hover {
+  background: #f3f4f6;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #1f2937;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.menu-toggle:hover {
+  background: #f3f4f6;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f9fafb;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  max-width: 400px;
+  width: 100%;
+  transition: all 0.3s;
+}
+
+.search-bar:focus-within {
+  background: white;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.search-bar svg {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  border: none;
+  background: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.search-bar input::placeholder {
+  color: #9ca3af;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-icon-btn {
+  position: relative;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.header-icon-btn:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #dc2626;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 50px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.header-divider {
+  width: 1px;
+  height: 32px;
+  background: #e5e7eb;
+}
+
+.header-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 12px;
+  transition: background 0.3s;
+}
+
+.header-profile:hover {
+  background: #f9fafb;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.profile-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.logout-btn {
+  color: #dc2626;
+}
+
+.logout-btn:hover {
+  background: #fef2f2;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .collapse-toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 0 1rem;
+  }
+
+  .search-bar {
+    display: none;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  .header-divider {
+    display: none;
+  }
+}
+
+/* Dark Mode */
+html.dark .admin-header {
+  background: #1e293b;
+  border-bottom-color: #334155;
+}
+
+html.dark .search-bar {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+html.dark .search-bar:focus-within {
+  background: #1e293b;
+}
+
+html.dark .search-bar input {
+  color: #f9fafb;
+}
+
+html.dark .menu-toggle,
+html.dark .collapse-toggle,
+html.dark .header-icon-btn {
+  color: #cbd5e1;
+}
+
+html.dark .menu-toggle:hover,
+html.dark .collapse-toggle:hover,
+html.dark .header-icon-btn:hover {
+  background: #334155;
+  color: #f9fafb;
+}
+
+html.dark .header-divider {
+  background: #334155;
+}
+
+html.dark .profile-name {
+  color: #f9fafb;
+}
+
+html.dark .profile-role {
+  color: #94a3b8;
+}

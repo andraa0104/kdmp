@@ -13,6 +13,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 code {
@@ -22,4 +23,14 @@ code {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Dark Mode */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: #111827;
+  color: #f9fafb;
 }

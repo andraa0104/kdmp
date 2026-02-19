@@ -57,7 +57,15 @@
 .login-logo {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.kdmp-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
 }
 
 .login-header h1 {
