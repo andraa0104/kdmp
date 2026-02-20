@@ -1,4 +1,4 @@
-import { Users, TrendingUp, Wallet, Store, Handshake, Target, ArrowRight, MapPin, Phone, Mail, Facebook, Instagram, Youtube, Award, Shield, Sparkles, Menu, X } from 'lucide-react';
+import { Users, TrendingUp, Wallet, Store, Handshake, Target, ArrowRight, MapPin, Phone, Mail, Facebook, Instagram, Youtube, Shield, Sparkles, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -15,7 +15,7 @@ const Homepage = () => {
   });
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({ title: '', content: <></> });
+  const [modalContent, setModalContent] = useState<{ title: string; content: React.ReactNode }>({ title: '', content: null });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -92,8 +92,8 @@ const Homepage = () => {
         <div className="hero-content">
           <div className="hero-text">
             <div className="hero-badge">
-              <Sparkles size={16} />
-              <span>Melayani Sejak 2015</span>
+              <Sparkles size={20} />
+              <span>Melayani Sejak 2025</span>
             </div>
             <h1 className="hero-title">
               Koperasi Desa
@@ -405,7 +405,7 @@ const Homepage = () => {
                 </div>
                 <div>
                   <h4>Alamat</h4>
-                  <p>Jl. Raya Purwajaya No. 123<br/>Desa Purwajaya, Kec. Loa Janan<br/>Kalimantan Timur 75391</p>
+                  <p>Jl. Jatah Dusun Marga Mulya RT. 14<br/>Desa Purwajaya, Kec. Loa Janan<br/>Kalimantan Timur 75391</p>
                 </div>
               </div>
               

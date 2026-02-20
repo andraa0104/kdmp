@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Wallet, TrendingUp, DollarSign, ShoppingBag, Newspaper, FileText, Settings, UserCog, Activity, X, ChevronDown, ChevronRight, Palette, User, UserPlus, Shield, Key } from 'lucide-react';
+import { LayoutDashboard, Users, Wallet, TrendingUp, DollarSign, ShoppingBag, Newspaper, FileText, Settings, UserCog, Activity, X, ChevronDown, ChevronRight, Palette, User, UserPlus, Shield, Key, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import Logo from '../Logo';
 import './Sidebar.css';
@@ -36,6 +36,7 @@ const Sidebar = ({ isOpen, isCollapsed, onClose }: SidebarProps) => {
   const settingsSubMenu = [
     { icon: Palette, label: 'Appearance', path: '/superadmin/settings/appearance' },
     { icon: User, label: 'Account', path: '/superadmin/settings/account' },
+    { icon: MapPin, label: 'Dusun & RT', path: '/superadmin/settings/dusun-rt' },
   ];
 
   return (

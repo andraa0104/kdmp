@@ -9,6 +9,7 @@ import Account from './pages/admin/Account';
 import UserList from './pages/admin/UserList';
 import RoleManagement from './pages/admin/RoleManagement';
 import PermissionManagement from './pages/admin/PermissionManagement';
+import DusunRT from './pages/admin/DusunRT';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route index element={<SuperadminDashboard />} />
           <Route path="settings/appearance" element={<Appearance />} />
           <Route path="settings/account" element={<Account />} />
+          <Route path="settings/dusun-rt" element={<DusunRT />} />
           <Route path="users/list" element={<UserList />} />
           <Route path="users/roles" element={<RoleManagement />} />
           <Route path="users/permissions" element={<PermissionManagement />} />

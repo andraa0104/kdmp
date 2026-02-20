@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight, ArrowLeft, User, MapPin, CreditCard, Phone, CheckCircle, Check } from 'lucide-react';
+import { ArrowRight, ArrowLeft, User, MapPin, CreditCard, Phone, CheckCircle, Check, Upload, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
+import kdmpLogo from '../assets/logo kdmp purwajaya remove BG HD.png';
 import './DaftarAnggota.css';
+import { dusunService, type DusunItem } from '../services/dusunService';
 
 const DaftarAnggota = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 4;
 
   const [formData, setFormData] = useState({
     nik: '',
@@ -31,15 +33,20 @@ const DaftarAnggota = () => {
     nomorWA: '',
     username: '',
     password: '',
-    confirmPassword: ''
+    fotoDiri: null as File | null
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [dusunData, setDusunData] = useState<DusunItem[]>([]);
+  const [isDusunLoading, setIsDusunLoading] = useState(false);
+  const [dusunLoadError, setDusunLoadError] = useState('');
 
-  const dusunList = ['Dusun 1', 'Dusun 2', 'Dusun 3', 'Dusun 4'];
-  const rtList = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010'];
   const bankList = ['BRI', 'BNI', 'BCA', 'Mandiri', 'BTN', 'Bank Kaltim', 'Bank Lainnya'];
+
+  const selectedDusun = dusunData.find(dusun => dusun.nama === formData.dusun);
+  const filteredRtList = selectedDusun?.rtList ?? [];
 
   useEffect(() => {
     if (formData.tanggalLahir) {
@@ -53,6 +60,24 @@ const DaftarAnggota = () => {
       setFormData(prev => ({ ...prev, umur: age.toString() }));
     }
   }, [formData.tanggalLahir]);
+
+  const loadDusun = async () => {
+    setIsDusunLoading(true);
+    try {
+      const data = await dusunService.getDusunWithRT();
+      setDusunData(data);
+      setDusunLoadError('');
+    } catch (error) {
+      setDusunData([]);
+      setDusunLoadError('Gagal memuat data dusun. Coba lagi.');
+    } finally {
+      setIsDusunLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDusun();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -85,7 +110,9 @@ const DaftarAnggota = () => {
           desa: 'Purwajaya',
           kecamatan: 'Loa Janan',
           kabupaten: 'Kutai Kartanegara',
-          provinsi: 'Kalimantan Timur'
+          provinsi: 'Kalimantan Timur',
+          dusun: '',
+          rt: ''
         }));
       } else {
         setFormData(prev => ({
@@ -95,13 +122,104 @@ const DaftarAnggota = () => {
           desa: '',
           kecamatan: '',
           kabupaten: '',
-          provinsi: ''
+          provinsi: '',
+          rt: ''
         }));
       }
       return;
     }
 
+    if (name === 'dusun') {
+      setFormData(prev => ({ ...prev, dusun: value, rt: '' }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxSize = 800;
+
+          if (width > height && width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error('Kompresi gagal'));
+              }
+            },
+            'image/jpeg',
+            0.7
+          );
+        };
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setErrors(prev => ({ ...prev, fotoDiri: 'Ukuran file maksimal 2MB' }));
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({ ...prev, fotoDiri: 'File harus berupa gambar' }));
+        return;
+      }
+
+      let processedFile = file;
+      if (file.size > 500 * 1024) {
+        try {
+          processedFile = await compressImage(file);
+        } catch (error) {
+          setErrors(prev => ({ ...prev, fotoDiri: 'Gagal memproses gambar' }));
+          return;
+        }
+      }
+
+      setFormData(prev => ({ ...prev, fotoDiri: processedFile }));
+      setErrors(prev => ({ ...prev, fotoDiri: '' }));
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(processedFile);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData(prev => ({ ...prev, fotoDiri: null }));
+    setPreviewImage(null);
   };
 
   const validateStep = (step: number) => {
@@ -146,17 +264,11 @@ const DaftarAnggota = () => {
       if (!formData.nomorWA || formData.nomorWA.length < 10) {
         newErrors.nomorWA = 'Nomor WhatsApp tidak valid';
       }
-    }
-
-    if (step === 5) {
       if (!formData.username || formData.username.length < 4) {
         newErrors.username = 'Username minimal 4 karakter';
       }
       if (!formData.password || formData.password.length < 6) {
         newErrors.password = 'Password minimal 6 karakter';
-      }
-      if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Password tidak cocok';
       }
     }
 
@@ -187,8 +299,7 @@ const DaftarAnggota = () => {
     { number: 1, title: 'Data Pribadi', icon: User },
     { number: 2, title: 'Alamat', icon: MapPin },
     { number: 3, title: 'Info Bank', icon: CreditCard },
-    { number: 4, title: 'Kontak', icon: Phone },
-    { number: 5, title: 'Akun', icon: User }
+    { number: 4, title: 'Kontak & Akun', icon: Phone }
   ];
 
   return (
@@ -202,7 +313,10 @@ const DaftarAnggota = () => {
       <div className="daftar-container">
         <div className="form-card">
           <div className="form-header">
-            <Logo size={50} />
+            <div className="logo-container">
+              <Logo size={80} />
+              <img src={kdmpLogo} alt="KDMP Purwajaya" className="kdmp-logo" />
+            </div>
             <h1>Formulir Pendaftaran Anggota</h1>
             <p>Koperasi Desa Merah Putih</p>
           </div>
@@ -384,13 +498,23 @@ const DaftarAnggota = () => {
                                 value={formData.dusun}
                                 onChange={handleChange}
                                 className={errors.dusun ? 'error' : ''}
+                                disabled={isDusunLoading}
                               >
                                 <option value="">Pilih Dusun</option>
-                                {dusunList.map(d => (
-                                  <option key={d} value={d}>{d}</option>
+                                {dusunData.map(d => (
+                                  <option key={d.id} value={d.nama}>{d.nama}</option>
                                 ))}
                               </select>
                               {errors.dusun && <span className="error-message">{errors.dusun}</span>}
+                              {isDusunLoading && <small>Memuat data dusun...</small>}
+                              {dusunLoadError && (
+                                <div className="inline-error">
+                                  <span className="error-message">{dusunLoadError}</span>
+                                  <button type="button" className="retry-button" onClick={loadDusun}>
+                                    Coba lagi
+                                  </button>
+                                </div>
+                              )}
                             </div>
 
                             <div className="form-group">
@@ -401,13 +525,23 @@ const DaftarAnggota = () => {
                                 value={formData.rt}
                                 onChange={handleChange}
                                 className={errors.rt ? 'error' : ''}
+                                disabled={!formData.dusun || isDusunLoading}
                               >
                                 <option value="">Pilih RT</option>
-                                {rtList.map(rt => (
-                                  <option key={rt} value={rt}>{rt}</option>
+                                {filteredRtList.map(rt => (
+                                  <option key={rt.id} value={rt.nomor}>{rt.nomor}</option>
                                 ))}
                               </select>
                               {errors.rt && <span className="error-message">{errors.rt}</span>}
+                              {isDusunLoading && <small>Memuat RT...</small>}
+                              {!isDusunLoading && formData.dusun && filteredRtList.length === 0 && (
+                                <div className="inline-error">
+                                  <span className="error-message">RT belum tersedia untuk dusun ini.</span>
+                                  <button type="button" className="retry-button" onClick={loadDusun}>
+                                    Coba lagi
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -574,12 +708,12 @@ const DaftarAnggota = () => {
               </div>
             )}
 
-            {/* Step 4: Kontak */}
+            {/* Step 4: Kontak & Akun */}
             {currentStep === 4 && (
               <div className="form-step">
                 <div className="step-content">
-                  <h2>Informasi Kontak</h2>
-                  <p className="step-description">Nomor yang dapat dihubungi</p>
+                  <h2>Kontak & Akun</h2>
+                  <p className="step-description">Informasi kontak dan akun login</p>
 
                   <div className="form-group">
                     <label htmlFor="nomorWA">Nomor WhatsApp <span className="required">*</span></label>
@@ -595,16 +729,36 @@ const DaftarAnggota = () => {
                     {errors.nomorWA && <span className="error-message">{errors.nomorWA}</span>}
                     <small>Format: 628xxx atau 08xxx (akan otomatis dikonversi)</small>
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Step 5: Akun & Disclaimer */}
-            {currentStep === 5 && (
-              <div className="form-step">
-                <div className="step-content">
-                  <h2>Buat Akun</h2>
-                  <p className="step-description">Username dan password untuk login</p>
+                  <div className="form-group">
+                    <label htmlFor="fotoDiri">Foto Diri</label>
+                    <div className="upload-area">
+                      {!previewImage ? (
+                        <label htmlFor="fotoDiri" className="upload-label">
+                          <Upload size={40} />
+                          <span className="upload-text">Klik untuk upload foto</span>
+                          <span className="upload-hint">JPG, PNG (Maks. 2MB)</span>
+                          <input
+                            type="file"
+                            id="fotoDiri"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                      ) : (
+                        <div className="image-preview">
+                          <img src={previewImage} alt="Preview" />
+                          <button type="button" onClick={removeImage} className="remove-image">
+                            <X size={20} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {errors.fotoDiri && <span className="error-message">{errors.fotoDiri}</span>}
+                  </div>
+
+                  <div className="divider"></div>
 
                   <div className="form-group">
                     <label htmlFor="username">Username <span className="required">*</span></label>
@@ -634,27 +788,13 @@ const DaftarAnggota = () => {
                     {errors.password && <span className="error-message">{errors.password}</span>}
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="confirmPassword">Konfirmasi Password <span className="required">*</span></label>
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      placeholder="Ulangi password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className={errors.confirmPassword ? 'error' : ''}
-                    />
-                    {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
-                  </div>
-
                   <div className="disclaimer-box">
                     <h3>Syarat & Ketentuan Keanggotaan</h3>
                     <div className="disclaimer-content">
                       <p>Dengan mendaftar sebagai anggota Koperasi Desa Merah Putih, saya menyatakan:</p>
                       <ul>
-                        <li>Bersedia menyetorkan <strong>Iuran Pokok sebesar Rp 10.000</strong> (dibayarkan satu kali)</li>
-                        <li>Bersedia menyetorkan <strong>Iuran Wajib sebesar Rp 100.000</strong> setiap bulan</li>
+                        <li>Bersedia menyetorkan <strong>Iuran Pokok sebesar Rp 100.000</strong> (dibayarkan satu kali)</li>
+                        <li>Bersedia menyetorkan <strong>Iuran Wajib sebesar Rp 10.000</strong> setiap bulan</li>
                         <li>Bersedia mentaati <strong>Anggaran Dasar (AD)</strong> dan <strong>Anggaran Rumah Tangga (ART)</strong> yang berlaku</li>
                         <li>Berkomitmen untuk aktif berpartisipasi dalam kegiatan koperasi</li>
                       </ul>
