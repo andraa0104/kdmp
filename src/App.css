@@ -767,6 +767,37 @@ body {
   gap: 0.75rem;
 }
 
+/* Modal Info Box */
+.modal-info-box {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(239, 68, 68, 0.08) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.modal-info-box h4 {
+  color: #dc2626;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-info-box h4::before {
+  content: '✨';
+  font-size: 1.2rem;
+}
+
+.modal-info-box p {
+  color: #4b5563;
+  line-height: 1.7;
+  font-size: 1rem;
+  margin: 0;
+}
+
 /* Products Section */
 .products {
   padding: 6rem 5%;
@@ -1257,4 +1288,498 @@ body {
     padding: 0.9rem 1.5rem;
     font-size: 1rem;
   }
+}
+
+/* ========================================
+   DARK MODE STYLES - HOMEPAGE
+   ======================================== */
+
+.dark .homepage {
+  background: var(--dark);
+  color: #f9fafb;
+}
+
+/* Navbar Dark Mode */
+.dark .navbar {
+  background: rgba(31, 41, 55, 0.95);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .brand-name {
+  color: #f9fafb;
+}
+
+.dark .brand-subtitle {
+  color: #9ca3af;
+}
+
+.dark .nav-links a {
+  color: #e5e7eb;
+}
+
+.dark .nav-links a:hover {
+  color: #ef4444;
+}
+
+.dark .btn-login {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #fbbf24 100%);
+  color: white;
+}
+
+.dark .btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+.dark .hamburger {
+  color: #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .hamburger:hover {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+}
+
+.dark .mobile-menu {
+  background: rgba(31, 41, 55, 0.98);
+  border-left-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .mobile-menu a {
+  color: #e5e7eb;
+}
+
+.dark .mobile-menu a:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: #ef4444;
+}
+
+.dark .btn-login-mobile {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #fbbf24 100%);
+}
+
+.dark .mobile-menu-close {
+  color: #e5e7eb;
+}
+
+/* Hero Section Dark Mode */
+.dark .hero {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+.dark .hero-title {
+  color: #f9fafb;
+}
+
+.dark .hero-subtitle {
+  color: #e5e7eb;
+}
+
+.dark .hero-badge {
+  background: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+
+.dark .hero-text p {
+  color: #d1d5db;
+}
+
+/* Stats Section Dark Mode */
+.dark .stats-section {
+  background: #111827;
+}
+
+.dark .stat-card {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .stat-card:hover {
+  background: rgba(31, 41, 55, 0.95);
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 30px rgba(220, 38, 38, 0.2);
+}
+
+.dark .stat-label {
+  color: #d1d5db;
+}
+
+.dark .stat-number {
+  background: linear-gradient(135deg, #ef4444 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .stat-icon {
+  color: #ef4444;
+}
+
+/* Features Section Dark Mode */
+.dark .features {
+  background: #1f2937;
+}
+
+.dark .section-title {
+  color: #f9fafb;
+}
+
+.dark .section-subtitle {
+  color: #d1d5db;
+}
+
+.dark .section-badge {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.3);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.dark .feature-card {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .feature-card:hover {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .feature-card h3 {
+  color: #f9fafb;
+}
+
+.dark .feature-card p {
+  color: #d1d5db;
+}
+
+.dark .feature-icon {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+}
+
+/* Services Section Dark Mode */
+.dark .services {
+  background: #111827;
+}
+
+.dark .service-card {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .service-card:hover {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .service-card.featured {
+  background: rgba(220, 38, 38, 0.15);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .service-card h3 {
+  color: #f9fafb;
+}
+
+.dark .service-card p {
+  color: #d1d5db;
+}
+
+.dark .service-icon {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+}
+
+.dark .service-link {
+  color: #fca5a5;
+}
+
+.dark .service-link:hover {
+  color: #ef4444;
+}
+
+/* Modal Info Box Dark Mode */
+.dark .modal-info-box {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(239, 68, 68, 0.15) 100%);
+  border-color: rgba(220, 38, 38, 0.25);
+  backdrop-filter: blur(8px);
+}
+
+.dark .modal-info-box h4 {
+  color: #fca5a5;
+}
+
+.dark .modal-info-box p {
+  color: #d1d5db;
+}
+
+.dark .featured-badge {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+/* Products Section Dark Mode */
+.dark .products {
+  background: #1f2937;
+}
+
+.dark .products-card {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .products-card:hover {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.dark .products-text h2 {
+  color: #f9fafb;
+}
+
+.dark .products-text p,
+.dark .products-description {
+  color: #d1d5db;
+}
+
+.dark .product-badge {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.3);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.dark .products-list li {
+  color: #d1d5db;
+}
+
+.dark .products-list li::before {
+  color: #ef4444;
+}
+
+.dark .product-item h4 {
+  color: #f9fafb;
+}
+
+.dark .product-item p {
+  color: #d1d5db;
+}
+
+.dark .showcase-item {
+  background: rgba(220, 38, 38, 0.05);
+}
+
+/* About Section Dark Mode */
+.dark .about {
+  background: #111827;
+}
+
+.dark .about-card {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.9) 0%, rgba(239, 68, 68, 0.85) 50%, rgba(251, 191, 36, 0.8) 100%);
+  box-shadow: 0 20px 60px rgba(220, 38, 38, 0.4);
+}
+
+.dark .about-card h3 {
+  color: #ffffff;
+}
+
+.dark .about-card p {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.dark .about-content h2 {
+  color: #f9fafb;
+}
+
+.dark .about-content p {
+  color: #d1d5db;
+}
+
+.dark .about-description {
+  color: #d1d5db;
+}
+
+.dark .about-feature h4 {
+  color: #f9fafb;
+}
+
+.dark .about-feature p {
+  color: #d1d5db;
+}
+
+.dark .feature-number {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #fbbf24 100%);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.dark .mission-card {
+  background: rgba(31, 41, 55, 0.4);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.dark .mission-card h3 {
+  color: #f3f4f6;
+}
+
+.dark .mission-card p {
+  color: #d1d5db;
+}
+
+/* Contact Section Dark Mode */
+.dark .contact {
+  background: #1f2937;
+}
+
+.dark .contact-info h2 {
+  color: #f9fafb;
+}
+
+.dark .contact-info > p {
+  color: #d1d5db;
+}
+
+.dark .contact-item h4 {
+  color: #f9fafb;
+}
+
+.dark .contact-item p {
+  color: #d1d5db;
+}
+
+.dark .contact-info-card {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .contact-info-card:hover {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .contact-info-card h3 {
+  color: #f9fafb;
+}
+
+.dark .contact-info-card p {
+  color: #d1d5db;
+}
+
+.dark .contact-icon {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+}
+
+.dark .social-media h4 {
+  color: #f9fafb;
+}
+
+.dark .social-links a {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.dark .social-links a:hover {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.dark .contact-form {
+  background: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .contact-form h3 {
+  color: #f9fafb;
+}
+
+.dark .form-group label {
+  color: #e5e7eb;
+}
+
+.dark .form-group input,
+.dark .form-group textarea {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f9fafb;
+}
+
+.dark .form-group input:focus,
+.dark .form-group textarea:focus {
+  background: rgba(17, 24, 39, 0.95);
+  border-color: rgba(220, 38, 38, 0.5);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.dark .form-group input::placeholder,
+.dark .form-group textarea::placeholder {
+  color: #6b7280;
+}
+
+/* Buttons Dark Mode */
+.dark .btn-secondary {
+  background: transparent;
+  border-color: rgba(220, 38, 38, 0.5);
+  color: #ef4444;
+}
+
+.dark .btn-secondary:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: #ef4444;
+}
+
+/* Footer Dark Mode */
+.dark .footer {
+  background: #0f172a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .footer-brand {
+  color: #f9fafb;
+}
+
+.dark .footer-section h3,
+.dark .footer-section h4 {
+  color: #f9fafb;
+}
+
+.dark .footer-section p {
+  color: #9ca3af;
+}
+
+.dark .footer-text {
+  color: #9ca3af;
+}
+
+.dark .footer-section a {
+  color: #d1d5db;
+}
+
+.dark .footer-section a:hover {
+  color: #ef4444;
+}
+
+.dark .footer-links a {
+  color: #d1d5db;
+}
+
+.dark .footer-links a:hover {
+  color: #ef4444;
+}
+
+.dark .social-links a {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.dark .social-links a:hover {
+  background: rgba(220, 38, 38, 0.25);
+}
+
+.dark .footer-bottom {
+  border-top-color: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
 }

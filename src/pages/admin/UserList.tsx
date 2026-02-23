@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserPlus, Search, Edit, Trash2, Power, X, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './UserList.css';
 
 const UserList = () => {
@@ -28,6 +29,29 @@ const UserList = () => {
 
   const adminJabatan = ['Admin Anggota', 'Admin Konten', 'Admin Keuangan'];
   const pengurusJabatan = ['Ketua', 'Wakil Bidang Anggota', 'Wakil Bidang Usaha', 'Sekretaris', 'Bendahara'];
+
+  // Body scroll lock when modal is open
+  useEffect(() => {
+    if (modalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [modalOpen]);
+
+  // Escape key handler to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && modalOpen) {
+        setModalOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [modalOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,17 +172,38 @@ const UserList = () => {
         </div>
       </div>
 
-      {modalOpen && (
-        <>
-          <div className="modal-overlay" onClick={() => setModalOpen(false)}></div>
-          <div className="modal-add-user">
-            <div className="modal-header">
-              <h3>Tambah User Baru</h3>
-              <button className="btn-close" onClick={() => setModalOpen(false)}>
-                <X size={20} />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit}>
+      <AnimatePresence mode="wait">
+        {modalOpen && (
+          <motion.div
+            className="modal-overlay"
+            onClick={() => setModalOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="modal-add-user"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{
+                type: "spring",
+                damping: 25,
+                stiffness: 300
+              }}
+            >
+              <div className="modal-drag-indicator"></div>
+              
+              <div className="modal-header">
+                <h2>Tambah User Baru</h2>
+                <button className="modal-close" onClick={() => setModalOpen(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
               <div className="modal-body">
                 <div className="form-row">
                   <div className="form-group">
@@ -259,6 +304,7 @@ const UserList = () => {
                   </div>
                 </div>
               </div>
+              
               <div className="modal-footer">
                 <button type="button" className="btn-cancel" onClick={() => setModalOpen(false)}>
                   Batal
@@ -268,10 +314,11 @@ const UserList = () => {
                   <span>Tambah User</span>
                 </button>
               </div>
-            </form>
-          </div>
-        </>
-      )}
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Plus, Edit2, Trash2, MapPin, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './DusunRT.css';
 import { dusunService, type DusunItem } from '../../services/dusunService';
 
@@ -23,6 +24,29 @@ const DusunRT = () => {
       }
     };
   }, []);
+
+  // Body scroll lock when modal is open
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showModal]);
+
+  // Escape key handler to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showModal) {
+        resetForm();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showModal]);
 
   useEffect(() => {
     const fetchDusun = async () => {
@@ -195,52 +219,81 @@ const DusunRT = () => {
         </div>
       )}
 
-      {showModal && (
-        <div className="modal-overlay" onClick={resetForm}>
-          <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-            <h3>{editingDusun ? 'Edit Dusun' : 'Tambah Dusun'}</h3>
-            
-            <div className="form-group">
-              <label>Nama Dusun</label>
-              <input
-                type="text"
-                placeholder="Contoh: Dusun 5"
-                value={dusunInput}
-                onChange={(e) => setDusunInput(e.target.value)}
-              />
-            </div>
+      <AnimatePresence mode="wait">
+        {showModal && (
+          <motion.div
+            className="modal-overlay"
+            onClick={resetForm}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="modal-content modal-large"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{
+                type: "spring",
+                damping: 25,
+                stiffness: 300
+              }}
+            >
+              <div className="modal-drag-indicator"></div>
+              
+              <div className="modal-header">
+                <h2>{editingDusun ? 'Edit Dusun' : 'Tambah Dusun'}</h2>
+                <button className="modal-close" onClick={resetForm}>
+                  <X size={20} />
+                </button>
+              </div>
 
-            <div className="form-group">
-              <label>Daftar RT</label>
-              {rtInputs.map((rt, index) => (
-                <div key={index} className="rt-input-group">
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Nama Dusun</label>
                   <input
                     type="text"
-                    placeholder="Contoh: 001"
-                    value={rt}
-                    onChange={(e) => updateRtInput(index, e.target.value)}
+                    placeholder="Contoh: Dusun 5"
+                    value={dusunInput}
+                    onChange={(e) => setDusunInput(e.target.value)}
                   />
-                  {rtInputs.length > 1 && (
-                    <button type="button" className="btn-remove" onClick={() => removeRtInput(index)}>
-                      <X size={18} />
-                    </button>
-                  )}
                 </div>
-              ))}
-              <button type="button" className="btn-add-rt" onClick={addRtInput}>
-                <Plus size={18} /> Tambah RT
-              </button>
-            </div>
 
-            <div className="modal-actions">
-              <button className="btn-cancel" onClick={resetForm}>Batal</button>
-              <button className="btn-save" onClick={handleAddDusun} disabled={isSaving}>
-                {isSaving ? 'Menyimpan...' : 'Simpan'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                <div className="form-group">
+                  <label>Daftar RT</label>
+                  {rtInputs.map((rt, index) => (
+                    <div key={index} className="rt-input-group">
+                      <input
+                        type="text"
+                        placeholder="Contoh: 001"
+                        value={rt}
+                        onChange={(e) => updateRtInput(index, e.target.value)}
+                      />
+                      {rtInputs.length > 1 && (
+                        <button type="button" className="btn-remove" onClick={() => removeRtInput(index)}>
+                          <X size={18} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" className="btn-add-rt" onClick={addRtInput}>
+                    <Plus size={18} /> Tambah RT
+                  </button>
+                </div>
+
+                <div className="modal-actions">
+                  <button className="btn-cancel" onClick={resetForm}>Batal</button>
+                  <button className="btn-save" onClick={handleAddDusun} disabled={isSaving}>
+                    {isSaving ? 'Menyimpan...' : 'Simpan'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

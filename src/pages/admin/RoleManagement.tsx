@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shield, Users, UserCog, User, Plus, Edit, Trash2, X, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './RoleManagement.css';
 
 interface Jabatan {
@@ -30,6 +31,29 @@ const RoleManagement = () => {
   const [selectedRole, setSelectedRole] = useState<'admin' | 'pengurus'>('admin');
   const [selectedJabatan, setSelectedJabatan] = useState<Jabatan | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '' });
+
+  // Body scroll lock when modal is open
+  useEffect(() => {
+    if (modalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [modalOpen]);
+
+  // Escape key handler to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && modalOpen) {
+        setModalOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [modalOpen]);
 
   const openAddModal = (role: 'admin' | 'pengurus') => {
     setModalType('add');
@@ -203,20 +227,40 @@ const RoleManagement = () => {
         })}
       </div>
 
-      {modalOpen && (
-        <>
-          <div className="modal-overlay" onClick={() => setModalOpen(false)}></div>
-          <div className="modal">
-            <div className="modal-header">
-              <h3>
-                {modalType === 'add' && 'Tambah Jabatan Baru'}
-                {modalType === 'edit' && 'Edit Jabatan'}
-                {modalType === 'delete' && 'Hapus Jabatan'}
-              </h3>
-              <button className="btn-close" onClick={() => setModalOpen(false)}>
-                <X size={20} />
-              </button>
-            </div>
+      <AnimatePresence mode="wait">
+        {modalOpen && (
+          <motion.div
+            className="modal-overlay"
+            onClick={() => setModalOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="modal"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{
+                type: "spring",
+                damping: 25,
+                stiffness: 300
+              }}
+            >
+              <div className="modal-drag-indicator"></div>
+              
+              <div className="modal-header">
+                <h2>
+                  {modalType === 'add' && 'Tambah Jabatan Baru'}
+                  {modalType === 'edit' && 'Edit Jabatan'}
+                  {modalType === 'delete' && 'Hapus Jabatan'}
+                </h2>
+                <button className="modal-close" onClick={() => setModalOpen(false)}>
+                  <X size={20} />
+                </button>
+              </div>
             <div className="modal-body">
               {modalType === 'delete' ? (
                 <>
@@ -285,9 +329,10 @@ const RoleManagement = () => {
                 {modalType === 'delete' && 'Ya, Hapus'}
               </button>
             </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

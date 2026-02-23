@@ -453,3 +453,134 @@
     padding: 0.8rem 1rem 0.8rem 2.75rem;
   }
 }
+
+/* ========================================
+   DARK MODE STYLES - LOGIN PAGE
+   ======================================== */
+
+.dark .login-page {
+  background: #0f172a;
+}
+
+.dark .login-container {
+  background: rgba(31, 41, 55, 0.4);
+}
+
+/* Form Section Dark Mode */
+.dark .login-form-section {
+  background: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+.dark .back-to-home {
+  color: #9ca3af;
+}
+
+.dark .back-to-home:hover {
+  color: #ef4444;
+}
+
+.dark .login-header h1 {
+  color: #f9fafb;
+}
+
+.dark .login-header p {
+  color: #9ca3af;
+}
+
+/* Form Elements Dark Mode */
+.dark .form-group label {
+  color: #e5e7eb;
+}
+
+.dark .input-wrapper {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .input-wrapper:focus-within {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.dark .input-wrapper input {
+  color: #f9fafb;
+}
+
+.dark .input-wrapper input::placeholder {
+  color: #6b7280;
+}
+
+.dark .input-icon {
+  color: #6b7280;
+}
+
+.dark .input-wrapper:focus-within .input-icon {
+  color: #ef4444;
+}
+
+.dark .toggle-password {
+  color: #6b7280;
+}
+
+.dark .toggle-password:hover {
+  color: #ef4444;
+}
+
+.dark .form-footer {
+  color: #9ca3af;
+}
+
+.dark .form-footer a {
+  color: #ef4444;
+}
+
+.dark .form-footer a:hover {
+  color: #dc2626;
+}
+
+/* Info Section Dark Mode */
+.dark .login-info-section {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(17, 24, 39, 0.8) 100%);
+}
+
+.dark .info-content h2 {
+  color: #f9fafb;
+}
+
+.dark .info-content p {
+  color: #d1d5db;
+}
+
+.dark .feature-item {
+  background: rgba(31, 41, 55, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .feature-item:hover {
+  background: rgba(31, 41, 55, 0.7);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.dark .feature-icon {
+  background: rgba(220, 38, 38, 0.2);
+  color: #ef4444;
+}
+
+.dark .feature-item h3 {
+  color: #f3f4f6;
+}
+
+.dark .feature-item p {
+  color: #d1d5db;
+}
+
+.dark .info-footer {
+  color: #9ca3af;
+}
+
+/* Decorative Shapes Dark Mode */
+.dark .decorative-shape {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}

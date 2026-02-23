@@ -758,3 +758,444 @@
     font-size: 0.85rem;
   }
 }
+
+/* ========================================
+   DARK MODE STYLES - DAFTAR ANGGOTA PAGE
+   ======================================== */
+
+/* Page Background */
+.dark .daftar-anggota-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+/* Header */
+.dark .back-link {
+  color: #9ca3af;
+}
+
+.dark .back-link:hover {
+  color: #ef4444;
+}
+
+/* Form Card */
+.dark .form-card {
+  background: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.dark .form-header {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .form-header h1 {
+  color: #f9fafb;
+}
+
+.dark .form-header p {
+  color: #9ca3af;
+}
+
+/* Stepper */
+.dark .stepper {
+  background: rgba(17, 24, 39, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .step-circle {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: #374151;
+  color: #6b7280;
+}
+
+.dark .step-item.active .step-circle {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+.dark .step-item.completed .step-circle {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.dark .step-label {
+  color: #6b7280;
+}
+
+.dark .step-item.active .step-label {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.dark .step-item.completed .step-label {
+  color: #10b981;
+}
+
+.dark .step-line {
+  background: #374151;
+}
+
+.dark .step-line.completed {
+  background: linear-gradient(90deg, #10b981 0%, #374151 100%);
+}
+
+/* Form Content */
+.dark .daftar-form {
+  background: rgba(17, 24, 39, 0.3);
+}
+
+.dark .step-content h2 {
+  color: #f9fafb;
+}
+
+.dark .step-description {
+  color: #9ca3af;
+}
+
+/* Form Groups */
+.dark .form-group label {
+  color: #e5e7eb;
+}
+
+.dark .form-group input,
+.dark .form-group select,
+.dark .form-group textarea {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f9fafb;
+}
+
+.dark .form-group input:focus,
+.dark .form-group select:focus,
+.dark .form-group textarea:focus {
+  background: rgba(17, 24, 39, 0.95);
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15);
+}
+
+.dark .form-group input::placeholder,
+.dark .form-group textarea::placeholder {
+  color: #6b7280;
+}
+
+.dark .form-group input:disabled,
+.dark .form-group select:disabled {
+  background: rgba(17, 24, 39, 0.4);
+  color: #6b7280;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .form-group small {
+  color: #9ca3af;
+}
+
+/* Error States */
+.dark .error-message {
+  color: #fca5a5;
+}
+
+.dark .retry-button {
+  background: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+}
+
+.dark .retry-button:hover {
+  background: rgba(220, 38, 38, 0.3);
+}
+
+/* Radio Cards */
+.dark .radio-content {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark .radio-card input[type="radio"]:checked + .radio-content {
+  background: rgba(220, 38, 38, 0.15);
+  border-color: #ef4444;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.25);
+}
+
+.dark .radio-title {
+  color: #d1d5db;
+}
+
+.dark .radio-card input[type="radio"]:checked + .radio-content .radio-title {
+  color: #fca5a5;
+}
+
+/* Info Box */
+.dark .info-box {
+  background: rgba(59, 130, 246, 0.1);
+  border-left-color: #3b82f6;
+  backdrop-filter: blur(10px);
+}
+
+.dark .info-box svg {
+  color: #60a5fa;
+}
+
+.dark .info-box strong {
+  color: #e5e7eb;
+}
+
+.dark .info-box p {
+  color: #9ca3af;
+}
+
+.dark .info-box.success {
+  background: rgba(16, 185, 129, 0.1);
+  border-left-color: #10b981;
+}
+
+.dark .info-box.success svg {
+  color: #34d399;
+}
+
+/* Disclaimer Box */
+.dark .disclaimer-box {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.dark .disclaimer-box h3 {
+  color: #fca5a5;
+}
+
+.dark .disclaimer-content p,
+.dark .disclaimer-content ul li {
+  color: #d1d5db;
+}
+
+.dark .disclaimer-checkbox {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .disclaimer-checkbox input:checked + label::before {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.dark .disclaimer-checkbox label {
+  color: #e5e7eb;
+}
+
+/* Checkbox Label */
+.dark .checkbox-label {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark .checkbox-label:hover {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.dark .checkbox-label span {
+  color: #e5e7eb;
+}
+
+.dark .checkbox-label input[type="checkbox"] {
+  accent-color: #ef4444;
+}
+
+/* Upload Area */
+.dark .upload-area {
+  background: rgba(17, 24, 39, 0.6);
+}
+
+.dark .upload-label {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark .upload-label:hover {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.dark .upload-label svg {
+  color: #6b7280;
+}
+
+.dark .upload-label:hover svg {
+  color: #ef4444;
+}
+
+.dark .upload-text {
+  color: #e5e7eb;
+}
+
+.dark .upload-hint {
+  color: #9ca3af;
+}
+
+.dark .image-preview {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* File Upload */
+.dark .file-upload-area {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark .file-upload-area:hover,
+.dark .file-upload-area.drag-over {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.dark .file-upload-icon {
+  color: #6b7280;
+}
+
+.dark .file-upload-area:hover .file-upload-icon,
+.dark .file-upload-area.drag-over .file-upload-icon {
+  color: #ef4444;
+}
+
+.dark .file-upload-text {
+  color: #d1d5db;
+}
+
+.dark .file-upload-hint {
+  color: #9ca3af;
+}
+
+.dark .file-preview {
+  background: rgba(17, 24, 39, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark .file-name {
+  color: #e5e7eb;
+}
+
+.dark .file-size {
+  color: #9ca3af;
+}
+
+.dark .file-remove {
+  background: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+}
+
+.dark .file-remove:hover {
+  background: rgba(220, 38, 38, 0.3);
+}
+
+/* Photo Preview */
+.dark .photo-preview {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .photo-preview-container {
+  background: rgba(17, 24, 39, 0.6);
+}
+
+.dark .remove-photo {
+  background: rgba(220, 38, 38, 0.9);
+}
+
+.dark .remove-photo:hover {
+  background: #dc2626;
+}
+
+/* Navigation Buttons */
+.dark .form-navigation {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .btn-prev {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+}
+
+.dark .btn-prev:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #f9fafb;
+}
+
+.dark .btn-next:disabled,
+.dark .btn-submit:disabled {
+  background: rgba(220, 38, 38, 0.3);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Success Page */
+.dark .success-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.dark .success-container {
+  background: rgba(31, 41, 55, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .success-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .success-icon {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.dark .success-content h1 {
+  color: #f9fafb;
+}
+
+.dark .success-content p {
+  color: #d1d5db;
+}
+
+.dark .success-info {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .info-row {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .info-row strong {
+  color: #e5e7eb;
+}
+
+.dark .info-row span {
+  color: #d1d5db;
+}
+
+.dark .success-next-steps {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.dark .success-next-steps h3 {
+  color: #fca5a5;
+}
+
+.dark .success-next-steps ol li {
+  color: #d1d5db;
+}
+
+.dark .success-actions .btn-secondary {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+}
+
+.dark .success-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #f9fafb;
+}
