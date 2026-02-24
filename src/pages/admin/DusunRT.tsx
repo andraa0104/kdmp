@@ -13,7 +13,8 @@ const DusunRT = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingDusun, setEditingDusun] = useState<DusunItem | null>(null);
   const [dusunInput, setDusunInput] = useState('');
-  const [rtInputs, setRtInputs] = useState<string[]>(['']);
+  const [kodeDusunInput, setKodeDusunInput] = useState('');
+  const [rtInputs, setRtInputs] = useState<Array<{ nomor: string; kode_rt: string }>>([{ nomor: '', kode_rt: '' }]);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const notificationTimerRef = useRef<number | null>(null);
 
@@ -76,8 +77,8 @@ const DusunRT = () => {
 
   const buildRtList = () => {
     return rtInputs
-      .filter(rt => rt.trim())
-      .map(rt => ({ nomor: rt.trim() }));
+      .filter(rt => rt.nomor.trim() && rt.kode_rt.trim())
+      .map(rt => ({ nomor: rt.nomor.trim(), kode_rt: rt.kode_rt.trim() }));
   };
 
   const refreshDusun = async () => {
@@ -86,8 +87,16 @@ const DusunRT = () => {
   };
 
   const handleAddDusun = async () => {
-    if (!dusunInput.trim() || !rtInputs.some(rt => rt.trim())) {
-      showNotification('error', 'Nama dusun dan minimal 1 RT wajib diisi.');
+    if (!dusunInput.trim()) {
+      showNotification('error', 'Nama dusun wajib diisi.');
+      return;
+    }
+    if (!kodeDusunInput.trim()) {
+      showNotification('error', 'Kode dusun wajib diisi.');
+      return;
+    }
+    if (!rtInputs.some(rt => rt.nomor.trim() && rt.kode_rt.trim())) {
+      showNotification('error', 'Minimal 1 RT dengan nomor dan kode wajib diisi.');
       return;
     }
 
@@ -96,6 +105,7 @@ const DusunRT = () => {
       if (editingDusun) {
         await dusunService.updateDusun(editingDusun.id, {
           nama: dusunInput.trim(),
+          kode_dusun: kodeDusunInput.trim(),
           rtList: buildRtList()
         });
         await refreshDusun();
@@ -103,6 +113,7 @@ const DusunRT = () => {
       } else {
         await dusunService.createDusun({
           nama: dusunInput.trim(),
+          kode_dusun: kodeDusunInput.trim(),
           rtList: buildRtList()
         });
         await refreshDusun();
@@ -119,7 +130,8 @@ const DusunRT = () => {
   const handleEditDusun = (dusun: DusunItem) => {
     setEditingDusun(dusun);
     setDusunInput(dusun.nama);
-    setRtInputs(dusun.rtList.map(rt => rt.nomor));
+    setKodeDusunInput(dusun.kode_dusun);
+    setRtInputs(dusun.rtList.map(rt => ({ nomor: rt.nomor, kode_rt: rt.kode_rt })));
     setShowModal(true);
   };
 
@@ -141,22 +153,23 @@ const DusunRT = () => {
   };
 
   const addRtInput = () => {
-    setRtInputs([...rtInputs, '']);
+    setRtInputs([...rtInputs, { nomor: '', kode_rt: '' }]);
   };
 
   const removeRtInput = (index: number) => {
     setRtInputs(rtInputs.filter((_, i) => i !== index));
   };
 
-  const updateRtInput = (index: number, value: string) => {
+  const updateRtInput = (index: number, field: 'nomor' | 'kode_rt', value: string) => {
     const newInputs = [...rtInputs];
-    newInputs[index] = value;
+    newInputs[index][field] = value;
     setRtInputs(newInputs);
   };
 
   const resetForm = () => {
     setDusunInput('');
-    setRtInputs(['']);
+    setKodeDusunInput('');
+    setRtInputs([{ nomor: '', kode_rt: '' }]);
     setEditingDusun(null);
     setShowModal(false);
   };
@@ -187,7 +200,10 @@ const DusunRT = () => {
               <div className="dusun-header">
                 <div className="dusun-title">
                   <MapPin size={20} />
-                  <h3>{dusun.nama}</h3>
+                  <div>
+                    <h3>{dusun.nama}</h3>
+                    <p className="dusun-code">Kode: {dusun.kode_dusun}</p>
+                  </div>
                 </div>
                 <div className="dusun-actions">
                   <button
@@ -252,7 +268,7 @@ const DusunRT = () => {
 
               <div className="modal-body">
                 <div className="form-group">
-                  <label>Nama Dusun</label>
+                  <label>Nama Dusun *</label>
                   <input
                     type="text"
                     placeholder="Contoh: Dusun 5"
@@ -262,14 +278,32 @@ const DusunRT = () => {
                 </div>
 
                 <div className="form-group">
+                  <label>Kode Dusun *</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: D05"
+                    value={kodeDusunInput}
+                    onChange={(e) => setKodeDusunInput(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
                   <label>Daftar RT</label>
                   {rtInputs.map((rt, index) => (
                     <div key={index} className="rt-input-group">
                       <input
                         type="text"
-                        placeholder="Contoh: 001"
-                        value={rt}
-                        onChange={(e) => updateRtInput(index, e.target.value)}
+                        placeholder="Nomor RT (001)"
+                        value={rt.nomor}
+                        onChange={(e) => updateRtInput(index, 'nomor', e.target.value)}
+                        style={{ flex: 1 }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Kode RT (RT001)"
+                        value={rt.kode_rt}
+                        onChange={(e) => updateRtInput(index, 'kode_rt', e.target.value)}
+                        style={{ flex: 1 }}
                       />
                       {rtInputs.length > 1 && (
                         <button type="button" className="btn-remove" onClick={() => removeRtInput(index)}>

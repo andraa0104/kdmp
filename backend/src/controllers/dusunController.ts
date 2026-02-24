@@ -56,9 +56,13 @@ export const getDusunWithRT = async (req: Request, res: Response) => {
 };
 
 export const createDusun = async (req: Request, res: Response) => {
-  const { nama, rtList } = req.body ?? {};
+  const { nama, kode_dusun, rtList } = req.body ?? {};
   if (!isNonEmptyString(nama)) {
     res.status(400).json({ error: 'Nama dusun is required' });
+    return;
+  }
+  if (!isNonEmptyString(kode_dusun)) {
+    res.status(400).json({ error: 'Kode dusun is required' });
     return;
   }
 
@@ -66,8 +70,8 @@ export const createDusun = async (req: Request, res: Response) => {
   try {
     await client.query('BEGIN');
     const dusunResult = await client.query(
-      'INSERT INTO dusun (nama) VALUES ($1) RETURNING *',
-      [nama]
+      'INSERT INTO dusun (nama, kode_dusun) VALUES ($1, $2) RETURNING *',
+      [nama, kode_dusun]
     );
     
     const dusun = dusunResult.rows[0];
@@ -79,10 +83,15 @@ export const createDusun = async (req: Request, res: Response) => {
           res.status(400).json({ error: 'RT nomor is required' });
           return;
         }
+        if (!isNonEmptyString(rt?.kode_rt)) {
+          await client.query('ROLLBACK');
+          res.status(400).json({ error: 'Kode RT is required' });
+          return;
+        }
 
         await client.query(
-          'INSERT INTO rt (dusun_id, nomor) VALUES ($1, $2)',
-          [dusun.id, rt.nomor]
+          'INSERT INTO rt (dusun_id, nomor, kode_rt) VALUES ($1, $2, $3)',
+          [dusun.id, rt.nomor, rt.kode_rt]
         );
       }
     }
@@ -104,9 +113,13 @@ export const updateDusun = async (req: Request, res: Response) => {
     return;
   }
 
-  const { nama, rtList } = req.body ?? {};
+  const { nama, kode_dusun, rtList } = req.body ?? {};
   if (!isNonEmptyString(nama)) {
     res.status(400).json({ error: 'Nama dusun is required' });
+    return;
+  }
+  if (!isNonEmptyString(kode_dusun)) {
+    res.status(400).json({ error: 'Kode dusun is required' });
     return;
   }
 
@@ -114,8 +127,8 @@ export const updateDusun = async (req: Request, res: Response) => {
   try {
     await client.query('BEGIN');
     const updateResult = await client.query(
-      'UPDATE dusun SET nama = $1 WHERE id = $2 RETURNING id',
-      [nama, id]
+      'UPDATE dusun SET nama = $1, kode_dusun = $2 WHERE id = $3 RETURNING id',
+      [nama, kode_dusun, id]
     );
 
     if (updateResult.rows.length === 0) {
@@ -133,10 +146,15 @@ export const updateDusun = async (req: Request, res: Response) => {
           res.status(400).json({ error: 'RT nomor is required' });
           return;
         }
+        if (!isNonEmptyString(rt?.kode_rt)) {
+          await client.query('ROLLBACK');
+          res.status(400).json({ error: 'Kode RT is required' });
+          return;
+        }
 
         await client.query(
-          'INSERT INTO rt (dusun_id, nomor) VALUES ($1, $2)',
-          [id, rt.nomor]
+          'INSERT INTO rt (dusun_id, nomor, kode_rt) VALUES ($1, $2, $3)',
+          [id, rt.nomor, rt.kode_rt]
         );
       }
     }

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { ArrowRight, ArrowLeft, User, MapPin, CreditCard, Phone, CheckCircle, Check, Upload, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
-import kdmpLogo from '../assets/logo kdmp purwajaya remove BG HD.png';
+import kdmpLogo from '../assets/logo kdmp purwajaya remove BG HD.svg';
 import './DaftarAnggota.css';
 import { dusunService, type DusunItem } from '../services/dusunService';
+import { anggotaService } from '../services/anggotaService';
 
 const DaftarAnggota = () => {
   const navigate = useNavigate();
@@ -33,15 +34,24 @@ const DaftarAnggota = () => {
     nomorWA: '',
     username: '',
     password: '',
-    fotoDiri: null as File | null
+    fotoDiri: null as File | null,
+    fotoKtp: null as File | null
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewKtp, setPreviewKtp] = useState<string | null>(null);
   const [dusunData, setDusunData] = useState<DusunItem[]>([]);
   const [isDusunLoading, setIsDusunLoading] = useState(false);
   const [dusunLoadError, setDusunLoadError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [registrationData, setRegistrationData] = useState<{
+    no_registrasi: string;
+    nama_lengkap: string;
+    username: string;
+  } | null>(null);
 
   const bankList = ['BRI', 'BNI', 'BCA', 'Mandiri', 'BTN', 'Bank Kaltim', 'Bank Lainnya'];
 
@@ -222,6 +232,44 @@ const DaftarAnggota = () => {
     setPreviewImage(null);
   };
 
+  const handleKtpChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setErrors(prev => ({ ...prev, fotoKtp: 'Ukuran file maksimal 2MB' }));
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({ ...prev, fotoKtp: 'File harus berupa gambar (JPEG/JPG)' }));
+        return;
+      }
+
+      let processedFile = file;
+      if (file.size > 500 * 1024) {
+        try {
+          processedFile = await compressImage(file);
+        } catch (error) {
+          setErrors(prev => ({ ...prev, fotoKtp: 'Gagal memproses gambar' }));
+          return;
+        }
+      }
+
+      setFormData(prev => ({ ...prev, fotoKtp: processedFile }));
+      setErrors(prev => ({ ...prev, fotoKtp: '' }));
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewKtp(reader.result as string);
+      };
+      reader.readAsDataURL(processedFile);
+    }
+  };
+
+  const removeKtp = () => {
+    setFormData(prev => ({ ...prev, fotoKtp: null }));
+    setPreviewKtp(null);
+  };
+
   const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {};
 
@@ -264,6 +312,9 @@ const DaftarAnggota = () => {
       if (!formData.nomorWA || formData.nomorWA.length < 10) {
         newErrors.nomorWA = 'Nomor WhatsApp tidak valid';
       }
+      if (!formData.fotoKtp) {
+        newErrors.fotoKtp = 'Foto KTP wajib diupload';
+      }
       if (!formData.username || formData.username.length < 4) {
         newErrors.username = 'Username minimal 4 karakter';
       }
@@ -286,13 +337,31 @@ const DaftarAnggota = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateStep(currentStep)) {
-      console.log('Form submitted:', formData);
-      // TODO: Submit to API
-      navigate('/login');
+    if (!validateStep(currentStep)) return;
+
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      const response = await anggotaService.register(formData);
+      
+      if (response.success) {
+        setRegistrationData(response.data);
+        setShowSuccessModal(true);
+      }
+    } catch (error: any) {
+      setErrors({ submit: error.message || 'Terjadi kesalahan saat pendaftaran' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate('/login');
   };
 
   const steps = [
@@ -758,6 +827,34 @@ const DaftarAnggota = () => {
                     {errors.fotoDiri && <span className="error-message">{errors.fotoDiri}</span>}
                   </div>
 
+                  <div className="form-group">
+                    <label htmlFor="fotoKtp">Foto KTP <span className="required">*</span></label>
+                    <div className="upload-area">
+                      {!previewKtp ? (
+                        <label htmlFor="fotoKtp" className="upload-label">
+                          <Upload size={40} />
+                          <span className="upload-text">Klik untuk upload foto KTP</span>
+                          <span className="upload-hint">JPEG/JPG (Maks. 2MB)</span>
+                          <input
+                            type="file"
+                            id="fotoKtp"
+                            accept="image/jpeg,image/jpg"
+                            onChange={handleKtpChange}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                      ) : (
+                        <div className="image-preview">
+                          <img src={previewKtp} alt="Preview KTP" />
+                          <button type="button" onClick={removeKtp} className="remove-image">
+                            <X size={20} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    {errors.fotoKtp && <span className="error-message">{errors.fotoKtp}</span>}
+                  </div>
+
                   <div className="divider"></div>
 
                   <div className="form-group">
@@ -793,8 +890,8 @@ const DaftarAnggota = () => {
                     <div className="disclaimer-content">
                       <p>Dengan mendaftar sebagai anggota Koperasi Desa Merah Putih, saya menyatakan:</p>
                       <ul>
-                        <li>Bersedia menyetorkan <strong>Iuran Pokok sebesar Rp 100.000</strong> (dibayarkan satu kali)</li>
-                        <li>Bersedia menyetorkan <strong>Iuran Wajib sebesar Rp 10.000</strong> setiap bulan</li>
+                        <li>Setelah pendaftaran <strong>disetujui</strong>, saya bersedia menyetorkan <strong>Iuran Pokok sebesar Rp 100.000</strong> (dibayarkan satu kali)</li>
+                        <li>Setelah pendaftaran <strong>disetujui</strong>, saya bersedia menyetorkan <strong>Iuran Wajib sebesar Rp 10.000</strong> setiap bulan</li>
                         <li>Bersedia mentaati <strong>Anggaran Dasar (AD)</strong> dan <strong>Anggaran Rumah Tangga (ART)</strong> yang berlaku</li>
                         <li>Berkomitmen untuk aktif berpartisipasi dalam kegiatan koperasi</li>
                       </ul>
@@ -812,10 +909,18 @@ const DaftarAnggota = () => {
               </div>
             )}
 
+            {/* Error message */}
+            {errors.submit && (
+              <div className="error-banner">
+                <X size={20} />
+                <span>{errors.submit}</span>
+              </div>
+            )}
+
             {/* Navigation Buttons */}
             <div className="form-navigation">
               {currentStep > 1 && (
-                <button type="button" onClick={prevStep} className="btn-prev">
+                <button type="button" onClick={prevStep} className="btn-prev" disabled={isSubmitting}>
                   <ArrowLeft size={20} /> Sebelumnya
                 </button>
               )}
@@ -828,15 +933,52 @@ const DaftarAnggota = () => {
                 <button 
                   type="submit" 
                   className="btn-submit"
-                  disabled={!agreedToTerms}
+                  disabled={!agreedToTerms || isSubmitting}
                 >
-                  Daftar Sekarang <CheckCircle size={20} />
+                  {isSubmitting ? 'Mengirim...' : 'Daftar Sekarang'} <CheckCircle size={20} />
                 </button>
               )}
             </div>
           </form>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && registrationData && (
+        <div className="modal-overlay" onClick={handleCloseSuccessModal}>
+          <div className="success-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="success-icon">
+              <CheckCircle size={60} />
+            </div>
+            <h2>Pendaftaran Berhasil!</h2>
+            <div className="success-content">
+              <div className="success-info">
+                <p><strong>No. Registrasi:</strong></p>
+                <p className="registration-number">{registrationData.no_registrasi}</p>
+              </div>
+              <div className="success-info">
+                <p><strong>Nama:</strong> {registrationData.nama_lengkap}</p>
+                <p><strong>Username:</strong> {registrationData.username}</p>
+                <p><strong>Status:</strong> <span className="status-pending">Menunggu Verifikasi</span></p>
+              </div>
+              <div className="info-box">
+                <h4>Langkah Selanjutnya:</h4>
+                <ol>
+                  <li>Silakan <strong>login</strong> menggunakan username dan password yang telah Anda buat</li>
+                  <li>Di portal anggota, Anda dapat <strong>memantau status pendaftaran</strong></li>
+                  <li>Admin akan memverifikasi data Anda dalam <strong>1-3 hari kerja</strong></li>
+                  <li>Jika disetujui, Anda akan dihubungi via <strong>WhatsApp</strong></li>
+                  <li>Lakukan <strong>pembayaran iuran pokok</strong> (Rp 100.000)</li>
+                  <li>Setelah pembayaran diverifikasi, status akan menjadi <strong>Aktif</strong></li>
+                </ol>
+              </div>
+            </div>
+            <button className="btn-primary" onClick={handleCloseSuccessModal}>
+              Login Sekarang
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

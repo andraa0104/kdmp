@@ -1,11 +1,13 @@
 export interface RTItem {
   id: number;
   nomor: string;
+  kode_rt: string;
 }
 
 export interface DusunItem {
   id: number;
   nama: string;
+  kode_dusun: string;
   rtList: RTItem[];
 }
 
@@ -25,7 +27,7 @@ export const dusunService = {
     return handleResponse<DusunItem[]>(response);
   },
 
-  async createDusun(payload: { nama: string; rtList: Array<{ nomor: string }> }): Promise<DusunItem> {
+  async createDusun(payload: { nama: string; kode_dusun: string; rtList: Array<{ nomor: string; kode_rt: string }> }): Promise<DusunItem> {
     const response = await fetch(`${API_BASE_URL}/dusun`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,7 +36,7 @@ export const dusunService = {
     return handleResponse<DusunItem>(response);
   },
 
-  async updateDusun(id: number, payload: { nama: string; rtList: Array<{ nomor: string }> }): Promise<void> {
+  async updateDusun(id: number, payload: { nama: string; kode_dusun: string; rtList: Array<{ nomor: string; kode_rt: string }> }): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/dusun/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

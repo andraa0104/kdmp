@@ -94,12 +94,13 @@
 
 .dusun-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
 }
 
 .dusun-title svg {
   color: #dc2626;
+  margin-top: 0.25rem;
 }
 
 .dusun-title h3 {
@@ -107,6 +108,13 @@
   font-weight: 700;
   color: #1f2937;
   margin: 0;
+}
+
+.dusun-code {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0 0;
+  font-weight: 500;
 }
 
 .dusun-actions {
@@ -527,6 +535,10 @@ html.dark .dusun-header {
 
 html.dark .dusun-title h3 {
   color: #f9fafb;
+}
+
+html.dark .dusun-code {
+  color: #9ca3af;
 }
 
 html.dark .rt-label {

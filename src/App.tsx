@@ -10,6 +10,10 @@ import UserList from './pages/admin/UserList';
 import RoleManagement from './pages/admin/RoleManagement';
 import PermissionManagement from './pages/admin/PermissionManagement';
 import DusunRT from './pages/admin/DusunRT';
+import KelolaAnggota from './pages/admin/KelolaAnggota';
+import PortalAnggotaLayout from './layouts/PortalAnggotaLayout';
+import DashboardAnggota from './pages/anggota/DashboardAnggota';
+import EditProfilAnggota from './pages/anggota/EditProfilAnggota';
 
 function App() {
   return (
@@ -19,8 +23,17 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/daftar-anggota" element={<DaftarAnggota />} />
         
+        {/* Portal Anggota Routes */}
+        <Route path="/portal-anggota/*" element={<PortalAnggotaLayout />}>
+          <Route index element={<DashboardAnggota />} />
+          <Route path="edit-profil" element={<EditProfilAnggota />} />
+          {/* TODO: Add more anggota routes like /profil, /bantuan */}
+        </Route>
+        
+        {/* Admin/Superadmin Routes */}
         <Route path="/superadmin/*" element={<SuperadminLayout />}>
           <Route index element={<SuperadminDashboard />} />
+          <Route path="anggota" element={<KelolaAnggota />} />
           <Route path="settings/appearance" element={<Appearance />} />
           <Route path="settings/account" element={<Account />} />
           <Route path="settings/dusun-rt" element={<DusunRT />} />

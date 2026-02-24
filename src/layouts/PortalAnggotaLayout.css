@@ -1,0 +1,481 @@
+/* =====================================================
+   PORTAL ANGGOTA LAYOUT
+   ===================================================== */
+
+.portal-anggota {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f9fafb;
+  transition: background-color 0.3s;
+}
+
+.loading-portal {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.portal-header {
+  height: 70px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transition: all 0.3s;
+}
+
+.portal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-sidebar-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.btn-sidebar-toggle:hover {
+  background: #f3f4f6;
+  color: #dc2626;
+}
+
+.portal-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.portal-logo-text h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.portal-logo-text p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+.portal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-theme-toggle {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-theme-toggle:hover {
+  background: #f3f4f6;
+  color: #dc2626;
+}
+
+.portal-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.user-status {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.btn-logout {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
+
+.portal-sidebar {
+  position: fixed;
+  left: 0;
+  top: 70px;
+  width: 280px;
+  height: calc(100vh - 70px);
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s;
+  z-index: 90;
+}
+
+.portal-nav {
+  flex: 1;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.nav-item:hover {
+  background: #f9fafb;
+  color: #dc2626;
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.nav-arrow {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.nav-item:hover .nav-arrow,
+.nav-item.active .nav-arrow {
+  opacity: 1;
+}
+
+.portal-sidebar-footer {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.member-info {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.1);
+}
+
+.member-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.member-number {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* =====================================================
+   MAIN CONTENT
+   ===================================================== */
+
+.portal-main {
+  margin-left: 280px;
+  margin-top: 70px;
+  min-height: calc(100vh - 70px);
+  padding: 2rem;
+  transition: margin-left 0.3s;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 992px) {
+  .btn-sidebar-toggle {
+    display: flex;
+  }
+
+  .portal-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .portal-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 80;
+  }
+
+  .portal-main {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .portal-header {
+    padding: 0 1rem;
+  }
+
+  .portal-logo-text h1 {
+    font-size: 1rem;
+  }
+
+  .portal-logo-text p {
+    display: none;
+  }
+
+  .portal-user-info {
+    padding: 0.5rem;
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .portal-main {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-header {
+    padding: 0 0.75rem;
+  }
+
+  .portal-header-right {
+    gap: 0.5rem;
+  }
+
+  .portal-logo {
+    gap: 0.5rem;
+  }
+
+  .portal-logo-text h1 {
+    font-size: 0.9rem;
+  }
+
+  .btn-theme-toggle {
+    padding: 0.375rem;
+  }
+
+  .btn-theme-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .portal-user-info {
+    padding: 0.375rem;
+  }
+
+  .btn-logout {
+    padding: 0.375rem;
+  }
+
+  .btn-logout svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .portal-main {
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+
+.dark.portal-anggota {
+  background: #0f172a;
+}
+
+.dark .portal-header {
+  background: #1e293b;
+  border-bottom-color: #334155;
+}
+
+.dark .btn-sidebar-toggle {
+  color: #e5e7eb;
+}
+
+.dark .btn-sidebar-toggle:hover {
+  background: #334155;
+  color: #fbbf24;
+}
+
+.dark .portal-logo-text h1 {
+  color: #f9fafb;
+}
+
+.dark .portal-logo-text p {
+  color: #94a3b8;
+}
+
+.dark .btn-theme-toggle {
+  color: #94a3b8;
+}
+
+.dark .btn-theme-toggle:hover {
+  background: #334155;
+  color: #fbbf24;
+}
+
+.dark .portal-user-info {
+  background: #0f172a;
+}
+
+.dark .user-name {
+  color: #f9fafb;
+}
+
+.dark .user-status {
+  color: #94a3b8;
+}
+
+.dark .btn-logout {
+  color: #94a3b8;
+}
+
+.dark .btn-logout:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: #fca5a5;
+}
+
+.dark .portal-sidebar {
+  background: #1e293b;
+  border-right-color: #334155;
+}
+
+.dark .nav-item {
+  color: #94a3b8;
+}
+
+.dark .nav-item:hover {
+  background: #334155;
+  color: #fbbf24;
+}
+
+.dark .nav-item.active {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+  color: #fbbf24;
+}
+
+.dark .portal-sidebar-footer {
+  border-top-color: #334155;
+}
+
+.dark .member-info {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.dark .member-label {
+  color: #94a3b8;
+}
+
+.dark .member-number {
+  color: #fbbf24;
+}
+
+.dark .loading-portal {
+  color: #94a3b8;
+}

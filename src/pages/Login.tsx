@@ -1,20 +1,44 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Eye, EyeOff, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import kdmpLogo from '../assets/logo kdmp purwajaya remove BG HD.png';
+import { authService } from '../services/authService';
 import './Login.css';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login:', formData);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await authService.login(formData);
+      
+      // Save session
+      authService.saveSession(response);
+
+      // Redirect based on user type
+      if (response.data.userType === 'admin') {
+        navigate('/superadmin');
+      } else {
+        navigate('/portal-anggota');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login gagal');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,22 +55,29 @@ const Login = () => {
                 <Logo size={80} />
                 <img src={kdmpLogo} alt="KDMP Purwajaya" className="kdmp-logo" />
               </div>
-              <h1>Portal Anggota</h1>
-              <p>Masuk ke akun anggota Koperasi Merah Putih</p>
+              <h1>Portal Koperasi</h1>
+              <p>Masuk untuk anggota, admin, bendahara, dan ketua</p>
             </div>
+
+            {error && (
+              <div className="login-error">
+                <p>{error}</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="login-form">
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="username">Username</label>
                 <div className="input-wrapper">
-                  <Mail size={20} />
+                  <User size={20} />
                   <input
-                    type="email"
-                    id="email"
-                    placeholder="nama@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    type="text"
+                    id="username"
+                    placeholder="Masukkan username"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -62,11 +93,13 @@ const Login = () => {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     className="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -75,14 +108,22 @@ const Login = () => {
 
               <div className="form-options">
                 <label className="remember-me">
-                  <input type="checkbox" />
+                  <input type="checkbox" disabled={isLoading} />
                   <span>Ingat saya</span>
                 </label>
                 <a href="#" className="forgot-password">Lupa password?</a>
               </div>
 
-              <button type="submit" className="btn-login-submit">
-                Masuk <ArrowRight size={20} />
+              <button type="submit" className="btn-login-submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 size={20} className="spinner" /> Memproses...
+                  </>
+                ) : (
+                  <>
+                    Masuk <ArrowRight size={20} />
+                  </>
+                )}
               </button>
             </form>
 
@@ -96,23 +137,23 @@ const Login = () => {
           <div className="illustration-content">
             <div className="illustration-badge">
               <span className="badge-dot"></span>
-              Khusus Anggota Koperasi
+              Portal Koperasi Merah Putih
             </div>
             <h2>Akses Informasi Koperasi Anda</h2>
-            <p>Portal anggota memberikan kemudahan untuk mengakses informasi simpanan, pinjaman, dan SHU Anda secara real-time.</p>
+            <p>Portal memberikan kemudahan untuk mengakses informasi simpanan, pinjaman, dan mengelola koperasi secara digital.</p>
             
             <div className="features-list">
               <div className="feature-item">
                 <div className="feature-check">✓</div>
-                <span>Cek Saldo Simpanan</span>
+                <span>Anggota - Cek Status & Saldo</span>
               </div>
               <div className="feature-item">
                 <div className="feature-check">✓</div>
-                <span>Riwayat Transaksi</span>
+                <span>Admin - Kelola Anggota</span>
               </div>
               <div className="feature-item">
                 <div className="feature-check">✓</div>
-                <span>Informasi SHU</span>
+                <span>Bendahara - Kelola Keuangan</span>
               </div>
             </div>
           </div>
