@@ -10,7 +10,9 @@ import {
   CreditCard,
   FileText,
   Wallet,
-  Edit
+  Edit,
+  ArrowRight,
+  History
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
@@ -85,8 +87,8 @@ const DashboardAnggota = () => {
       setHistoryLoading(true);
       const session = authService.getCurrentUser();
       if (session) {
-        const data = await anggotaService.getHistory(session.user.id);
-        setHistory(data);
+        const response = await anggotaService.getHistory(session.user.id, 10); // Get latest 10 items for dashboard
+        setHistory(response.data);
       }
     } catch (err) {
       console.error('Error loading history:', err);
@@ -161,6 +163,14 @@ const DashboardAnggota = () => {
           title: 'Anggota Aktif',
           message: 'Selamat! Anda sudah menjadi anggota aktif Koperasi Merah Putih.',
           nextStep: 'Anda dapat mulai menggunakan layanan simpanan dan pinjaman koperasi.'
+        };
+      case 'Non Aktif':
+        return {
+          icon: XCircle,
+          color: 'red',
+          title: 'Status Non Aktif',
+          message: 'Keanggotaan Anda saat ini dalam status non aktif.',
+          nextStep: 'Silakan hubungi admin untuk informasi lebih lanjut.'
         };
       default:
         return {
@@ -240,23 +250,40 @@ const DashboardAnggota = () => {
         </div>
       </div>
 
-      {/* Status Card - Hide when payment is rejected, show alert instead */}
-      {!hasRejectedPayment && (
-        <div className={`status-card status-${statusInfo.color}`}>
-          <div className="status-card-header">
-            <StatusIcon size={32} />
-            <div>
-              <h2>{statusInfo.title}</h2>
-              <p className="status-badge">{profile.status}</p>
+      {/* Status Card - Redesigned - Hide when payment is rejected or Non Aktif */}
+      {!hasRejectedPayment && profile.status !== 'Non Aktif' && (
+        <div className={`status-card-modern status-${statusInfo.color}`}>
+          <div className="status-card-decoration">
+            <div className="decoration-circle circle-1"></div>
+            <div className="decoration-circle circle-2"></div>
+            <div className="decoration-circle circle-3"></div>
+          </div>
+          <div className="status-card-content">
+            <div className="status-card-left">
+              <div className="status-icon-wrapper">
+                <StatusIcon size={40} />
+              </div>
+              <div className="status-info">
+                <div className="status-label">Status Keanggotaan</div>
+                <h2 className="status-title">{statusInfo.title}</h2>
+                <span className={`status-pill status-${statusInfo.color}`}>{profile.status}</span>
+              </div>
+            </div>
+            <div className="status-card-right">
+              <div className="status-message-box">
+                <p className="status-message-text">{statusInfo.message}</p>
+                {statusInfo.nextStep && (
+                  <div className="status-next-action">
+                    <div className="next-action-header">
+                      <ArrowRight size={20} />
+                      <strong>Langkah Selanjutnya:</strong>
+                    </div>
+                    <p>{statusInfo.nextStep}</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <p className="status-message">{statusInfo.message}</p>
-          {statusInfo.nextStep && (
-            <div className="status-next-step">
-              <strong>Langkah Selanjutnya:</strong>
-              <p>{statusInfo.nextStep}</p>
-            </div>
-          )}
         </div>
       )}
 
@@ -275,6 +302,29 @@ const DashboardAnggota = () => {
             <Edit size={20} />
             Perbaiki Data & Ajukan Ulang
           </button>
+        </div>
+      )}
+
+      {/* Non Aktif Alert - Show reason for inactive status */}
+      {profile.status === 'Non Aktif' && (
+        <div className="rejection-card non-aktif-card">
+          <div className="rejection-header">
+            <XCircle size={24} />
+            <h3>Status Non Aktif</h3>
+          </div>
+          {profile.alasan_non_aktif && (
+            <div className="non-aktif-reason">
+              <strong>Alasan Dinonaktifkan:</strong>
+              <p>{profile.alasan_non_aktif}</p>
+            </div>
+          )}
+          {!profile.alasan_non_aktif && (
+            <p>Keanggotaan Anda telah dinonaktifkan oleh admin. Silakan hubungi admin koperasi untuk informasi lebih lanjut mengenai status keanggotaan Anda.</p>
+          )}
+          <div className="non-aktif-info">
+            <AlertCircle size={18} />
+            <p>Untuk mengaktifkan kembali keanggotaan, silakan hubungi admin koperasi.</p>
+          </div>
         </div>
       )}
 
@@ -317,36 +367,196 @@ const DashboardAnggota = () => {
         </div>
       )}
 
-      {/* Timeline */}
-      <div className="timeline-card">
-        <h3>Status Proses Keanggotaan</h3>
-        <div className="timeline">
-          {timeline.map((step, index) => (
-            <div key={index} className={`timeline-step ${step.status}`}>
-              <div className="timeline-marker">
-                {step.status === 'completed' && <CheckCircle size={24} />}
-                {step.status === 'current' && <Clock size={24} />}
-                {step.status === 'rejected' && <XCircle size={24} />}
-                {step.status === 'pending' && <div className="timeline-dot"></div>}
+      {/* Timeline - Only show for Pending, Ditolak, and Diterima status */}
+      {profile.status !== 'Aktif' && profile.status !== 'Non Aktif' && (
+        <div className="timeline-card">
+          <h3>Status Proses Keanggotaan</h3>
+          <div className="timeline">
+            {timeline.map((step, index) => (
+              <div key={index} className={`timeline-step ${step.status}`}>
+                <div className="timeline-marker">
+                  {step.status === 'completed' && <CheckCircle size={24} />}
+                  {step.status === 'current' && <Clock size={24} />}
+                  {step.status === 'rejected' && <XCircle size={24} />}
+                  {step.status === 'pending' && <div className="timeline-dot"></div>}
+                </div>
+                <div className="timeline-content">
+                  <p className="timeline-name">{step.name}</p>
+                  <p className="timeline-status-text">
+                    {step.status === 'completed' && 'Selesai'}
+                    {step.status === 'current' && 'Sedang Diproses'}
+                    {step.status === 'rejected' && 'Ditolak'}
+                    {step.status === 'pending' && 'Belum Diproses'}
+                  </p>
+                </div>
+                {index < timeline.length - 1 && (
+                  <div className={`timeline-line ${step.status === 'completed' ? 'completed' : ''}`}></div>
+                )}
               </div>
-              <div className="timeline-content">
-                <p className="timeline-name">{step.name}</p>
-                <p className="timeline-status-text">
-                  {step.status === 'completed' && 'Selesai'}
-                  {step.status === 'current' && 'Sedang Diproses'}
-                  {step.status === 'rejected' && 'Ditolak'}
-                  {step.status === 'pending' && 'Belum Diproses'}
-                </p>
-              </div>
-              {index < timeline.length - 1 && (
-                <div className={`timeline-line ${step.status === 'completed' ? 'completed' : ''}`}></div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Profile Cards Grid */}
+      {/* Active Member Dashboard - Redesigned */}
+      {profile.status === 'Aktif' && (
+        <div className="active-member-dashboard">
+          {/* Member Hero Card */}
+          <div className="member-hero-card">
+            <div className="hero-bg-pattern"></div>
+            <div className="member-hero-content">
+              <div className="member-avatar-section">
+                {profile.foto_diri ? (
+                  <img src={profile.foto_diri} alt={profile.nama_lengkap} className="member-hero-avatar" />
+                ) : (
+                  <div className="member-hero-avatar-placeholder">
+                    <User size={48} />
+                  </div>
+                )}
+                <div className="member-hero-info">
+                  <h2>{profile.nama_lengkap}</h2>
+                  <div className="member-hero-meta">
+                    <span className="hero-badge active">
+                      <CheckCircle size={16} />
+                      Anggota Aktif
+                    </span>
+                    <span className="hero-member-number">{profile.nomor_anggota_koperasi}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="member-hero-stats">
+                <div className="hero-stat-item">
+                  <div className="stat-icon">
+                    <Clock size={20} />
+                  </div>
+                  <div className="stat-content">
+                    <span className="stat-label">Bergabung Sejak</span>
+                    <span className="stat-value">
+                      {new Date(profile.tanggal_daftar).toLocaleDateString('id-ID', {
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                </div>
+                <div className="hero-stat-item">
+                  <div className="stat-icon success">
+                    <CheckCircle size={20} />
+                  </div>
+                  <div className="stat-content">
+                    <span className="stat-label">Status Iuran</span>
+                    <span className="stat-value">Lunas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Access Menu Grid */}
+          <div className="quick-menu-section">
+            <h3 className="section-title">Menu Cepat</h3>
+            <div className="quick-menu-grid">
+              <div className="menu-card primary" onClick={() => navigate('/portal-anggota/profil')}>
+                <div className="menu-card-icon">
+                  <User size={28} />
+                </div>
+                <div className="menu-card-content">
+                  <h4>Profil Saya</h4>
+                  <p>Lihat & edit profil lengkap</p>
+                </div>
+                <ArrowRight size={20} className="menu-card-arrow" />
+              </div>
+
+              <div className="menu-card secondary" onClick={() => navigate('/portal-anggota/riwayat')}>
+                <div className="menu-card-icon">
+                  <History size={28} />
+                </div>
+                <div className="menu-card-content">
+                  <h4>Riwayat</h4>
+                  <p>Lihat riwayat keanggotaan</p>
+                </div>
+                <ArrowRight size={20} className="menu-card-arrow" />
+              </div>
+
+              <div className="menu-card accent">
+                <div className="menu-card-icon">
+                  <Phone size={28} />
+                </div>
+                <div className="menu-card-content">
+                  <h4>Kontak</h4>
+                  <p>{profile.nomor_wa}</p>
+                </div>
+              </div>
+
+              <div className="menu-card info">
+                <div className="menu-card-icon">
+                  <MapPin size={28} />
+                </div>
+                <div className="menu-card-content">
+                  <h4>Alamat</h4>
+                  <p>{profile.dusun_nama ? `${profile.dusun_nama}, RT ${profile.rt_nomor || profile.rt}` : profile.alamat.substring(0, 30) + '...'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Cards */}
+          <div className="info-cards-grid">
+            <div className="info-card bank">
+              <div className="info-card-header">
+                <CreditCard size={24} />
+                <h4>Informasi Rekening</h4>
+              </div>
+              <div className="info-card-body">
+                <div className="info-row">
+                  <span className="info-label">Bank</span>
+                  <span className="info-value-text">{profile.nama_bank}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">No. Rekening</span>
+                  <span className="info-value-text">{profile.nomor_rekening}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Atas Nama</span>
+                  <span className="info-value-text">{profile.atas_nama}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="info-card membership">
+              <div className="info-card-header">
+                <FileText size={24} />
+                <h4>Data Keanggotaan</h4>
+              </div>
+              <div className="info-card-body">
+                <div className="info-row">
+                  <span className="info-label">No. Registrasi</span>
+                  <span className="info-value-text">{profile.no_registrasi}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Tanggal Verifikasi</span>
+                  <span className="info-value-text">
+                    {profile.tanggal_verifikasi && new Date(profile.tanggal_verifikasi).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Jenis Warga</span>
+                  <span className="info-value-text">
+                    {profile.jenis_warga === 'warga_desa' ? 'Warga Desa' : 'Warga Luar'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Cards Grid - Only show for pending, rejected, or accepted members */}
+      {profile.status !== 'Aktif' && profile.status !== 'Non Aktif' && (
       <div className="profile-cards">
         {/* Photo Card */}
         {profile.foto_diri && (
@@ -668,6 +878,7 @@ const DashboardAnggota = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* Modal Konfirmasi Pembayaran */}
       {showKonfirmasiModal && (

@@ -10,7 +10,8 @@ import {
   konfirmasiBayarIuranPokok,
   tolakKonfirmasiBayar,
   updateAnggotaByAdmin,
-  resetPasswordByAdmin
+  resetPasswordByAdmin,
+  updatePasswordByUser
 } from '../controllers/anggotaController';
 
 const router = Router();
@@ -24,6 +25,7 @@ router.get('/profile/:id', getAnggotaProfile);
 router.get('/:id/history', getAnggotaHistory);
 router.put('/:id/resubmit', resubmitAnggota);
 router.put('/:id/konfirmasi-bayar', konfirmasiBayarIuranPokok);
+router.put('/:id/update-password', updatePasswordByUser);
 
 // Admin routes
 router.get('/', getAllAnggota);

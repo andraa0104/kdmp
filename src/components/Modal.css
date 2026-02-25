@@ -34,8 +34,8 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 28px;
-  max-width: 650px;
-  width: 100%;
+  max-width: 1200px !important;
+  width: 95% !important;
   max-height: 85vh;
   overflow: hidden;
   display: flex;
@@ -360,6 +360,8 @@
   }
 
   .modal-content {
+    max-width: 100% !important;
+    width: 100% !important;
     max-height: 90vh;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -403,6 +405,8 @@
   }
 
   .modal-content {
+    max-width: 100% !important;
+    width: 100% !important;
     max-height: 95vh;
     border-radius: 24px 24px 0 0;
   }

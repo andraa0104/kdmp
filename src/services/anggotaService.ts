@@ -56,10 +56,13 @@ export interface AnggotaProfile {
   atas_nama: string;
   nomor_wa: string;
   username: string;
-  foto_diri?: string;  foto_ktp?: string;  status: 'Pending' | 'Ditolak' | 'Diterima' | 'Non Aktif' | 'Aktif';
+  foto_diri?: string;
+  foto_ktp?: string;
+  status: 'Pending' | 'Ditolak' | 'Diterima' | 'Non Aktif' | 'Aktif';
   tanggal_daftar: string;
   tanggal_verifikasi?: string;
   alasan_ditolak?: string;
+  alasan_non_aktif?: string;
   iuran_pokok_dibayar: boolean;
   tanggal_bayar_iuran_pokok?: string;
   konfirmasi_bayar_iuran_pokok: boolean;
@@ -112,6 +115,15 @@ export interface VerifikasiHistory {
   verified_by: number | null;
   verified_by_username?: string;
   created_at: string;
+}
+
+export interface HistoryResponse {
+  data: VerifikasiHistory[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
 }
 
 // Helper function to convert File to base64
@@ -294,15 +306,31 @@ export const anggotaService = {
   updateStatus: async (
     id: number,
     status: string,
-    alasanDitolak?: string,
+    alasan?: string,
     verifiedBy?: number
   ) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/${id}/status`, {
+      const payload: {
+        status: string;
+        verified_by?: number;
+        alasan_ditolak?: string;
+        alasan_non_aktif?: string;
+      } = {
         status,
-        alasan_ditolak: alasanDitolak,
         verified_by: verifiedBy
-      });
+      };
+      
+      // Set alasan_ditolak untuk status Ditolak
+      if (status === 'Ditolak' && alasan) {
+        payload.alasan_ditolak = alasan;
+      }
+      
+      // Set alasan_non_aktif untuk status Non Aktif
+      if (status === 'Non Aktif' && alasan) {
+        payload.alasan_non_aktif = alasan;
+      }
+      
+      const response = await axios.put(`${API_BASE_URL}/${id}/status`, payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
@@ -327,10 +355,14 @@ export const anggotaService = {
   /**
    * Get history verifikasi anggota
    */
-  getHistory: async (id: number): Promise<VerifikasiHistory[]> => {
+  getHistory: async (id: number, limit?: number | 'all', offset?: number): Promise<HistoryResponse> => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${id}/history`);
-      return response.data.data;
+      const params = new URLSearchParams();
+      if (limit !== undefined) params.append('limit', limit.toString());
+      if (offset !== undefined) params.append('offset', offset.toString());
+      
+      const response = await axios.get(`${API_BASE_URL}/${id}/history?${params.toString()}`);
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       throw new Error(axiosError.response?.data?.message || 'Gagal memuat riwayat');
@@ -391,6 +423,22 @@ export const anggotaService = {
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       throw new Error(axiosError.response?.data?.message || 'Gagal reset password');
+    }
+  },
+
+  /**
+   * Update password anggota (by user)
+   */
+  updatePassword: async (id: number, currentPassword: string, newPassword: string) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/${id}/update-password`, {
+        currentPassword,
+        newPassword
+      });
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      throw new Error(axiosError.response?.data?.message || 'Gagal mengubah password');
     }
   }
 };

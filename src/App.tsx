@@ -14,6 +14,8 @@ import KelolaAnggota from './pages/admin/KelolaAnggota';
 import PortalAnggotaLayout from './layouts/PortalAnggotaLayout';
 import DashboardAnggota from './pages/anggota/DashboardAnggota';
 import EditProfilAnggota from './pages/anggota/EditProfilAnggota';
+import ProfilAnggota from './pages/anggota/ProfilAnggota';
+import RiwayatAnggota from './pages/anggota/RiwayatAnggota';
 
 function App() {
   return (
@@ -26,8 +28,9 @@ function App() {
         {/* Portal Anggota Routes */}
         <Route path="/portal-anggota/*" element={<PortalAnggotaLayout />}>
           <Route index element={<DashboardAnggota />} />
+          <Route path="profil" element={<ProfilAnggota />} />
+          <Route path="riwayat" element={<RiwayatAnggota />} />
           <Route path="edit-profil" element={<EditProfilAnggota />} />
-          {/* TODO: Add more anggota routes like /profil, /bantuan */}
         </Route>
         
         {/* Admin/Superadmin Routes */}

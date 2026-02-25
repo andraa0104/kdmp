@@ -9,7 +9,8 @@ import {
   Sun,
   Moon,
   HelpCircle,
-  ChevronRight
+  ChevronRight,
+  History
 } from 'lucide-react';
 import { authService } from '../services/authService';
 import { useTheme } from '../contexts/ThemeContext';
@@ -58,6 +59,7 @@ const PortalAnggotaLayout = () => {
   const menuItems = [
     { path: '/portal-anggota', name: 'Dashboard', icon: Home },
     { path: '/portal-anggota/profil', name: 'Profil Saya', icon: User },
+    { path: '/portal-anggota/riwayat', name: 'Riwayat', icon: History },
     { path: '/portal-anggota/bantuan', name: 'Bantuan', icon: HelpCircle },
   ];
 

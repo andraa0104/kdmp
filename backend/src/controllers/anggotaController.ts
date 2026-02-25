@@ -408,13 +408,13 @@ export const updateStatusAnggota = async (req: Request, res: Response) => {
   
   try {
     const { id } = req.params;
-    const { status, alasan_ditolak, verified_by } = req.body;
+    const { status, alasan_ditolak, alasan_non_aktif, verified_by } = req.body;
 
     await client.query('BEGIN');
 
     // Get current status
     const currentResult = await client.query(
-      'SELECT status, jenis_warga, dusun_id, rt_id FROM anggota WHERE id = $1',
+      'SELECT status, jenis_warga, dusun_id, rt_id, nomor_anggota_koperasi FROM anggota WHERE id = $1',
       [id]
     );
 
@@ -434,9 +434,17 @@ export const updateStatusAnggota = async (req: Request, res: Response) => {
     const params: (string | number | null)[] = [status, verified_by];
     let paramIndex = 3;
 
+    // Handle alasan ditolak
     if (status === 'Ditolak' && alasan_ditolak) {
       updateQuery += `, alasan_ditolak = $${paramIndex}`;
       params.push(alasan_ditolak);
+      paramIndex++;
+    }
+    
+    // Handle alasan non aktif
+    if (status === 'Non Aktif' && alasan_non_aktif) {
+      updateQuery += `, alasan_non_aktif = $${paramIndex}`;
+      params.push(alasan_non_aktif);
       paramIndex++;
     }
 
@@ -476,13 +484,21 @@ export const updateStatusAnggota = async (req: Request, res: Response) => {
       aksi = `Status diubah ke ${status}`;
     }
 
+    // Determine catatan based on status
+    let catatan = null;
+    if (status === 'Ditolak' && alasan_ditolak) {
+      catatan = alasan_ditolak;
+    } else if (status === 'Non Aktif' && alasan_non_aktif) {
+      catatan = alasan_non_aktif;
+    }
+    
     await insertHistory(
       client,
       Number(id),
       currentStatus,
       status,
       aksi,
-      alasan_ditolak || null,
+      catatan,
       verified_by
     );
 
@@ -544,7 +560,7 @@ export const resubmitAnggota = async (req: Request, res: Response) => {
 
     // Check if anggota exists and is rejected
     const checkResult = await client.query(
-      'SELECT status FROM anggota WHERE id = $1',
+      'SELECT status, jenis_warga, dusun_id, rt_id, nomor_anggota_koperasi FROM anggota WHERE id = $1',
       [id]
     );
 
@@ -552,9 +568,9 @@ export const resubmitAnggota = async (req: Request, res: Response) => {
       throw new Error('Anggota tidak ditemukan');
     }
 
-    if (checkResult.rows[0].status !== 'Ditolak') {
-      throw new Error('Hanya anggota dengan status Ditolak yang dapat mengajukan ulang');
-    }
+    const currentData = checkResult.rows[0];
+    const isDitolak = currentData.status === 'Ditolak';
+    const isAktif = currentData.status === 'Aktif';
 
     // Get dusun_id and rt_id if provided
     let dusun_id = null;
@@ -575,8 +591,25 @@ export const resubmitAnggota = async (req: Request, res: Response) => {
       }
     }
 
-    // Update anggota data and reset status to Pending
-    const updateQuery = `
+    // Check if nomor anggota needs to be regenerated (untuk anggota Aktif)
+    let newNomorAnggota: string | null = null;
+    if (isAktif && currentData.nomor_anggota_koperasi) {
+      const jenisWargaChanged = jenis_warga !== currentData.jenis_warga;
+      const dusunIdChanged = dusun_id !== currentData.dusun_id;
+      const rtIdChanged = rt_id !== currentData.rt_id;
+      
+      if (jenisWargaChanged || dusunIdChanged || rtIdChanged) {
+        // Regenerate nomor anggota dengan data baru
+        const nomorAnggotaResult = await client.query(
+          'SELECT generate_nomor_anggota($1, $2, $3) as nomor',
+          [jenis_warga, dusun_id, rt_id]
+        );
+        newNomorAnggota = nomorAnggotaResult.rows[0].nomor;
+      }
+    }
+
+    // Build update query based on status
+    let updateQuery = `
       UPDATE anggota 
       SET 
         nik = $1,
@@ -598,16 +631,9 @@ export const resubmitAnggota = async (req: Request, res: Response) => {
         atas_nama = $17,
         nomor_wa = $18,
         foto_diri = COALESCE($19, foto_diri),
-        foto_ktp = COALESCE($20, foto_ktp),
-        status = 'Pending',
-        alasan_ditolak = NULL,
-        tanggal_verifikasi = NULL,
-        verified_by = NULL
-      WHERE id = $21
-      RETURNING *
-    `;
+        foto_ktp = COALESCE($20, foto_ktp)`;
 
-    const updateResult = await client.query(updateQuery, [
+    const params: (string | number | null)[] = [
       nik,
       nama_lengkap,
       jenis_kelamin,
@@ -626,28 +652,77 @@ export const resubmitAnggota = async (req: Request, res: Response) => {
       nama_bank,
       atas_nama,
       nomor_wa,
-      foto_diri || null, // Use provided foto or keep existing
-      foto_ktp || null, // Use provided foto KTP or keep existing
-      id
-    ]);
+      foto_diri || null,
+      foto_ktp || null
+    ];
 
-    // Insert history: Pengajuan Ulang
-    await insertHistory(
-      client,
-      Number(id),
-      'Ditolak', // status sebelumnya pasti Ditolak
-      'Pending',
-      'Pengajuan Ulang',
-      'Anggota mengajukan ulang pendaftaran setelah ditolak',
-      null // verified_by: NULL karena ini aksi dari anggota sendiri
-    );
+    let paramIndex = params.length + 1;
+
+    // If Ditolak, reset to Pending
+    if (isDitolak) {
+      updateQuery += `,
+        status = 'Pending',
+        alasan_ditolak = NULL,
+        tanggal_verifikasi = NULL,
+        verified_by = NULL`;
+    }
+
+    // If Aktif and nomor anggota regenerated
+    if (newNomorAnggota) {
+      updateQuery += `, nomor_anggota_koperasi = $${paramIndex}`;
+      params.push(newNomorAnggota);
+      paramIndex++;
+    }
+
+    updateQuery += ` WHERE id = $${paramIndex} RETURNING *`;
+    params.push(id);
+
+    const updateResult = await client.query(updateQuery, params);
+
+    // Insert history based on action
+    let historyAction = 'Update Profil';
+    let historyCatatan = 'Anggota memperbarui data profil';
+    
+    if (isDitolak) {
+      historyAction = 'Pengajuan Ulang';
+      historyCatatan = 'Anggota mengajukan ulang pendaftaran setelah ditolak';
+      await insertHistory(
+        client,
+        Number(id),
+        'Ditolak',
+        'Pending',
+        historyAction,
+        historyCatatan,
+        null
+      );
+    } else {
+      if (newNomorAnggota) {
+        historyCatatan += ` - Nomor anggota diperbarui menjadi ${newNomorAnggota} (perubahan jenis warga/dusun/RT)`;
+      }
+      await insertHistory(
+        client,
+        Number(id),
+        currentData.status,
+        currentData.status,
+        historyAction,
+        historyCatatan,
+        null
+      );
+    }
 
     await client.query('COMMIT');
 
+    const responseMessage = isDitolak 
+      ? 'Data berhasil diperbaiki dan diajukan ulang untuk verifikasi'
+      : newNomorAnggota
+        ? `Data berhasil diperbarui. Nomor anggota baru: ${newNomorAnggota}`
+        : 'Data berhasil diperbarui';
+
     res.json({
       success: true,
-      message: 'Data berhasil diperbaiki dan diajukan ulang untuk verifikasi',
-      data: updateResult.rows[0]
+      message: responseMessage,
+      data: updateResult.rows[0],
+      nomorAnggotaBaru: newNomorAnggota
     });
 
   } catch (error) {
@@ -668,25 +743,54 @@ export const resubmitAnggota = async (req: Request, res: Response) => {
 /**
  * Get history verifikasi anggota
  * GET /api/anggota/:id/history
+ * Query params: limit, offset
  */
 export const getAnggotaHistory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { limit, offset } = req.query;
 
-    const result = await pool.query(
-      `SELECT 
+    // Get total count
+    const countResult = await pool.query(
+      `SELECT COUNT(*)::INTEGER as total
+       FROM verifikasi_history
+       WHERE anggota_id = $1`,
+      [id]
+    );
+    const total = parseInt(countResult.rows[0].total) || 0;
+
+    // Build query with pagination
+    let query = `SELECT 
         vh.*,
         u.username as verified_by_username
        FROM verifikasi_history vh
        LEFT JOIN users u ON vh.verified_by = u.id
        WHERE vh.anggota_id = $1
-       ORDER BY vh.created_at DESC`,
-      [id]
-    );
+       ORDER BY vh.created_at DESC`;
+    
+    const params: any[] = [id];
+    
+    if (limit && limit !== 'all') {
+      const limitNum = parseInt(limit as string);
+      query += ` LIMIT $2`;
+      params.push(limitNum);
+      
+      if (offset !== undefined) {
+        const offsetNum = parseInt(offset as string);
+        query += ` OFFSET $3`;
+        params.push(offsetNum);
+      }
+    }
+
+    const result = await pool.query(query, params);
 
     res.json({
-      success: true,
-      data: result.rows
+      data: result.rows,
+      pagination: {
+        total,
+        limit: limit === 'all' ? total : parseInt(limit as string) || total,
+        offset: parseInt(offset as string) || 0
+      }
     });
 
   } catch (error) {
@@ -1141,6 +1245,98 @@ export const resetPasswordByAdmin = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Terjadi kesalahan saat reset password'
+    });
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Update password anggota oleh user sendiri
+ * PUT /api/anggota/:id/update-password
+ */
+export const updatePasswordByUser = async (req: Request, res: Response) => {
+  const client = await pool.connect();
+  
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password saat ini dan password baru wajib diisi'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password baru minimal 6 karakter'
+      });
+    }
+
+    await client.query('BEGIN');
+
+    // Get current anggota data
+    const anggotaResult = await client.query(
+      'SELECT password, status, nama_lengkap FROM anggota WHERE id = $1',
+      [id]
+    );
+
+    if (anggotaResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({
+        success: false,
+        message: 'Anggota tidak ditemukan'
+      });
+    }
+
+    const currentData = anggotaResult.rows[0];
+
+    // Verify current password
+    const passwordMatch = await bcrypt.compare(currentPassword, currentData.password);
+    if (!passwordMatch) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({
+        success: false,
+        message: 'Password saat ini tidak sesuai'
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await client.query(
+      'UPDATE anggota SET password = $1 WHERE id = $2',
+      [hashedPassword, id]
+    );
+
+    // Insert history log
+    await insertHistory(
+      client,
+      parseInt(id),
+      currentData.status,
+      currentData.status,
+      'Ubah Password',
+      'Anggota mengubah password sendiri',
+      parseInt(id) // User ID = anggota ID
+    );
+
+    await client.query('COMMIT');
+
+    res.json({
+      success: true,
+      message: 'Password berhasil diubah'
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error update password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengubah password'
     });
   } finally {
     client.release();

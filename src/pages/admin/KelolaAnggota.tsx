@@ -4,7 +4,7 @@ import {
   AlertCircle, Users, Edit2, Key, Upload, ChevronDown, ChevronUp,
   Download
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { anggotaService, type AnggotaListItem, type AnggotaProfile } from '../../services/anggotaService';
 import { dusunService, type DusunItem } from '../../services/dusunService';
 import { statsService, type AnggotaSummary, type GrowthDataPoint } from '../../services/statsService';
@@ -584,11 +584,6 @@ const KelolaAnggota = () => {
     loadAnggota();
   };
 
-  const pieData = summary ? [
-    { name: 'Warga Desa', value: summary.breakdown.warga_desa, color: '#3b82f6' },
-    { name: 'Warga Luar', value: summary.breakdown.warga_luar, color: '#8b5cf6' }
-  ] : [];
-
   return (
     <div className="kelola-anggota-page kelola-modern">
       {/* Toast Notification */}
@@ -647,42 +642,6 @@ const KelolaAnggota = () => {
               <span className="stat-badge badge-warning">
                 {summary && summary.total > 0 ? Math.round((summary.nonAktif / summary.total) * 100) : 0}%
               </span>
-            </div>
-          </div>
-
-          <div className="stat-card-modern stat-chart">
-            <div className="stat-content">
-              <p className="stat-label">Breakdown Anggota</p>
-              {pieData.length > 0 && (
-                <div className="pie-chart-container">
-                  <ResponsiveContainer width="100%" height={120}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={30}
-                        outerRadius={50}
-                        paddingAngle={2}
-                        dataKey="value"
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="pie-legend">
-                    {pieData.map((entry) => (
-                      <div key={entry.name} className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: entry.color }}></span>
-                        <span className="legend-text">{entry.name}: {entry.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -1060,7 +1019,7 @@ const KelolaAnggota = () => {
 
             <div className="detail-section">
               <h3>Data Pribadi</h3>
-              <div className="detail-grid">
+              <div className="detail-grid detail-grid-3col">
                 <div className="detail-item">
                   <label>NIK</label>
                   <span>{selectedAnggota.nik}</span>
@@ -1086,7 +1045,7 @@ const KelolaAnggota = () => {
 
             <div className="detail-section">
               <h3>Alamat</h3>
-              <div className="detail-grid">
+              <div className="detail-grid detail-grid-3col">
                 <div className="detail-item full-width">
                   <label>Jenis Warga</label>
                   <span className={`badge ${selectedAnggota.jenis_warga === 'warga_desa' ? 'badge-blue' : 'badge-gray'}`}>
@@ -1128,7 +1087,7 @@ const KelolaAnggota = () => {
 
             <div className="detail-section">
               <h3>Informasi Bank</h3>
-              <div className="detail-grid">
+              <div className="detail-grid detail-grid-3col">
                 <div className="detail-item">
                   <label>Nama Bank</label>
                   <span>{selectedAnggota.nama_bank}</span>
@@ -1168,6 +1127,12 @@ const KelolaAnggota = () => {
                   <Key size={18} />
                   Reset Password
                 </button>
+                {selectedAnggota.status === 'Aktif' && (
+                  <button className="btn-danger" onClick={() => handleVerifyClick(selectedAnggota, 'deactivate')}>
+                    <UserX size={20} />
+                    Nonaktifkan Anggota
+                  </button>
+                )}
               </div>
 
               {selectedAnggota.status === 'Pending' && (
@@ -1194,13 +1159,6 @@ const KelolaAnggota = () => {
                     Verifikasi & Aktifkan
                   </button>
                 </div>
-              )}
-
-              {selectedAnggota.status === 'Aktif' && (
-                <button className="btn-danger-outline" onClick={() => handleVerifyClick(selectedAnggota, 'deactivate')}>
-                  <UserX size={20} />
-                  Nonaktifkan Anggota
-                </button>
               )}
 
               {selectedAnggota.status === 'Non Aktif' && (
@@ -1404,7 +1362,7 @@ const KelolaAnggota = () => {
 
             <div className="form-section">
               <h3>Data Pribadi</h3>
-              <div className="form-grid">
+              <div className="form-grid detail-grid-3col">
                 <div className="form-group">
                   <label>NIK</label>
                   <input type="text" value={editFormData.nik || ''} onChange={(e) => handleEditFormChange('nik', e.target.value)} maxLength={16} />
@@ -1441,7 +1399,7 @@ const KelolaAnggota = () => {
 
             <div className="form-section">
               <h3>Alamat</h3>
-              <div className="form-grid">
+              <div className="form-grid detail-grid-3col">
                 <div className="form-group full-width">
                   <label>Alamat Lengkap</label>
                   <textarea value={editFormData.alamat || ''} onChange={(e) => handleEditFormChange('alamat', e.target.value)} rows={3} />
@@ -1496,7 +1454,7 @@ const KelolaAnggota = () => {
 
             <div className="form-section">
               <h3>Informasi Bank</h3>
-              <div className="form-grid">
+              <div className="form-grid detail-grid-3col">
                 <div className="form-group">
                   <label>Nama Bank</label>
                   <input type="text" value={editFormData.nama_bank || ''} onChange={(e) => handleEditFormChange('nama_bank', e.target.value)} />
@@ -1505,7 +1463,7 @@ const KelolaAnggota = () => {
                   <label>Nomor Rekening</label>
                   <input type="text" value={editFormData.nomor_rekening || ''} onChange={(e) => handleEditFormChange('nomor_rekening', e.target.value)} />
                 </div>
-                <div className="form-group full-width">
+                <div className="form-group">
                   <label>Atas Nama</label>
                   <input type="text" value={editFormData.atas_nama || ''} onChange={(e) => handleEditFormChange('atas_nama', e.target.value)} />
                 </div>

@@ -17,6 +17,7 @@ const EditProfilAnggota = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [status, setStatus] = useState<'Pending' | 'Ditolak' | 'Diterima' | 'Non Aktif' | 'Aktif'>('Pending');
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
     message: '',
@@ -80,6 +81,9 @@ const EditProfilAnggota = () => {
       }
 
       const profile = await anggotaService.getProfile(session.user.id);
+      
+      // Save status
+      setStatus(profile.status);
       
       console.log('Profile loaded:', profile); // Debug log
       console.log('Tanggal lahir from DB:', profile.tanggal_lahir); // Debug log
@@ -222,17 +226,30 @@ const EditProfilAnggota = () => {
         return;
       }
 
-      await anggotaService.updateProfileAndResubmit(session.user.id, formData);
+      const result = await anggotaService.updateProfileAndResubmit(session.user.id, formData);
       
-      showToast('Data berhasil diperbaiki dan diajukan ulang untuk verifikasi!', 'success');
+      if (status === 'Ditolak') {
+        showToast('Data berhasil diperbaiki dan diajukan ulang untuk verifikasi!', 'success');
+      } else {
+        // Check if nomor anggota changed
+        if (result.nomorAnggotaBaru) {
+          showToast(`Data berhasil diperbarui! Nomor anggota baru Anda: ${result.nomorAnggotaBaru}`, 'success');
+        } else {
+          showToast('Data berhasil diperbarui!', 'success');
+        }
+      }
       
-      // Redirect to dashboard after 2 seconds
+      // Redirect to dashboard after 3 seconds (give time to read new nomor anggota)
       setTimeout(() => {
         navigate('/portal-anggota');
-      }, 2000);
+      }, result.nomorAnggotaBaru ? 3500 : 2000);
     } catch (err) {
       const error = err as Error;
-      showToast(error.message || 'Gagal mengajukan ulang pendaftaran', 'error');
+      if (status === 'Ditolak') {
+        showToast(error.message || 'Gagal mengajukan ulang pendaftaran', 'error');
+      } else {
+        showToast(error.message || 'Gagal memperbarui data', 'error');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -263,8 +280,17 @@ const EditProfilAnggota = () => {
   return (
     <div className="edit-profil-container">
       <div className="edit-profil-header">
-        <h1>Perbaiki Data & Ajukan Ulang</h1>
-        <p>Perbaiki data yang ditolak dan ajukan kembali untuk verifikasi</p>
+        {status === 'Ditolak' ? (
+          <>
+            <h1>Perbaiki Data & Ajukan Ulang</h1>
+            <p>Perbaiki data yang ditolak dan ajukan kembali untuk verifikasi</p>
+          </>
+        ) : (
+          <>
+            <h1>Edit Profil</h1>
+            <p>Perbarui informasi profil Anda</p>
+          </>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="edit-profil-form">
@@ -618,7 +644,10 @@ const EditProfilAnggota = () => {
             className="btn-submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Mengajukan...' : 'Ajukan Ulang'}
+            {status === 'Ditolak' 
+              ? (isSubmitting ? 'Mengajukan...' : 'Ajukan Ulang')
+              : (isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan')
+            }
           </button>
         </div>
       </form>
