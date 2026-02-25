@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import dusunRoutes from './routes/dusunRoutes';
 import anggotaRoutes from './routes/anggotaRoutes';
+import statsRoutes from './routes/statsRoutes';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', dusunRoutes);
 app.use('/api/anggota', anggotaRoutes);
+app.use('/api/stats', statsRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

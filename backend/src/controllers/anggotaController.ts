@@ -324,12 +324,13 @@ export const getAnggotaProfile = async (req: Request, res: Response) => {
  */
 export const getAllAnggota = async (req: Request, res: Response) => {
   try {
-    const { status, search } = req.query;
+    const { status, search, jenis_warga, dusun, rt, nomor_anggota } = req.query;
 
     let query = `
       SELECT 
         a.id, a.no_registrasi, a.nomor_anggota_koperasi, a.nik, a.nama_lengkap,
         a.jenis_kelamin, a.jenis_warga, a.status, a.tanggal_daftar, a.tanggal_verifikasi,
+        a.dusun_id, a.rt_id,
         d.nama as dusun_nama,
         r.nomor as rt_nomor,
         u.username as verified_by_username
@@ -340,7 +341,7 @@ export const getAllAnggota = async (req: Request, res: Response) => {
       WHERE 1=1
     `;
 
-    const params: (string | number)[] = [];
+    const params: (string | number | string[])[] = [];
     let paramIndex = 1;
 
     if (status) {
@@ -350,8 +351,33 @@ export const getAllAnggota = async (req: Request, res: Response) => {
     }
 
     if (search) {
-      query += ` AND (a.nama_lengkap ILIKE $${paramIndex} OR a.nik ILIKE $${paramIndex} OR a.no_registrasi ILIKE $${paramIndex})`;
+      query += ` AND (a.nama_lengkap ILIKE $${paramIndex} OR a.nomor_anggota_koperasi ILIKE $${paramIndex})`;
       params.push(`%${search as string}%`);
+      paramIndex++;
+    }
+
+    if (jenis_warga) {
+      const jenisWargaArray = (jenis_warga as string).split(',');
+      query += ` AND a.jenis_warga = ANY($${paramIndex}::text[])`;
+      params.push(jenisWargaArray);
+      paramIndex++;
+    }
+
+    if (dusun) {
+      query += ` AND a.dusun_id = $${paramIndex}`;
+      params.push(parseInt(dusun as string));
+      paramIndex++;
+    }
+
+    if (rt) {
+      query += ` AND a.rt_id = $${paramIndex}`;
+      params.push(parseInt(rt as string));
+      paramIndex++;
+    }
+
+    if (nomor_anggota) {
+      query += ` AND a.nomor_anggota_koperasi ILIKE $${paramIndex}`;
+      params.push(`%${nomor_anggota as string}%`);
       paramIndex++;
     }
 

@@ -77,7 +77,9 @@ export interface AnggotaListItem {
   status: string;
   tanggal_daftar: string;
   tanggal_verifikasi?: string;
+  dusun_id?: number;
   dusun_nama?: string;
+  rt_id?: number;
   rt_nomor?: string;
   verified_by_username?: string;
   foto_diri?: string;
@@ -259,11 +261,24 @@ export const anggotaService = {
   /**
    * Get all anggota (untuk admin)
    */
-  getAll: async (filters?: { status?: string; search?: string }): Promise<AnggotaListItem[]> => {
+  getAll: async (filters?: { 
+    status?: string; 
+    search?: string;
+    jenis_warga?: string[];
+    dusun?: string;
+    rt?: string;
+    nomor_anggota?: string;
+  }): Promise<AnggotaListItem[]> => {
     try {
       const params = new URLSearchParams();
       if (filters?.status) params.append('status', filters.status);
       if (filters?.search) params.append('search', filters.search);
+      if (filters?.jenis_warga && filters.jenis_warga.length > 0) {
+        params.append('jenis_warga', filters.jenis_warga.join(','));
+      }
+      if (filters?.dusun) params.append('dusun', filters.dusun);
+      if (filters?.rt) params.append('rt', filters.rt);
+      if (filters?.nomor_anggota) params.append('nomor_anggota', filters.nomor_anggota);
 
       const response = await axios.get(`${API_BASE_URL}?${params.toString()}`);
       return response.data.data;
