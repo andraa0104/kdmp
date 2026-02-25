@@ -238,7 +238,6 @@ DECLARE
   v_prefix VARCHAR(1);
   v_kode_dusun VARCHAR(2);
   v_kode_rt VARCHAR(2);
-  v_running_number VARCHAR(4);
   v_nomor_anggota VARCHAR(9);
   v_count INT;
 BEGIN
@@ -249,33 +248,44 @@ BEGIN
     v_prefix := '2';
   END IF;
   
-  -- 2. Kode Dusun
-  IF p_jenis_warga = 'warga_desa' AND p_dusun_id IS NOT NULL THEN
-    SELECT kode_dusun INTO v_kode_dusun FROM dusun WHERE id = p_dusun_id;
-    v_kode_dusun := LPAD(v_kode_dusun, 2, '0');
+  -- 2. Generate nomor berdasarkan jenis warga
+  IF p_jenis_warga = 'warga_luar' THEN
+    -- Untuk warga luar: format 2 + 8 digit running number (contoh: 200000001)
+    -- Hitung semua warga luar yang aktif
+    SELECT COUNT(*) + 1 INTO v_count
+    FROM anggota
+    WHERE jenis_warga = 'warga_luar'
+      AND status = 'Aktif'
+      AND nomor_anggota_koperasi IS NOT NULL;
+    
+    v_nomor_anggota := v_prefix || LPAD(v_count::TEXT, 8, '0');
   ELSE
-    v_kode_dusun := '00';
+    -- Untuk warga desa: format 1 + 2 digit dusun + 2 digit RT + 4 digit running number
+    -- Kode Dusun
+    IF p_dusun_id IS NOT NULL THEN
+      SELECT kode_dusun INTO v_kode_dusun FROM dusun WHERE id = p_dusun_id;
+      v_kode_dusun := LPAD(v_kode_dusun, 2, '0');
+    ELSE
+      v_kode_dusun := '00';
+    END IF;
+    
+    -- Kode RT
+    IF p_rt_id IS NOT NULL THEN
+      SELECT kode_rt INTO v_kode_rt FROM rt WHERE id = p_rt_id;
+      v_kode_rt := LPAD(v_kode_rt, 2, '0');
+    ELSE
+      v_kode_rt := '00';
+    END IF;
+    
+    -- Running Number (per RT untuk warga desa)
+    SELECT COUNT(*) + 1 INTO v_count
+    FROM anggota
+    WHERE rt_id = p_rt_id 
+      AND status = 'Aktif'
+      AND nomor_anggota_koperasi IS NOT NULL;
+    
+    v_nomor_anggota := v_prefix || v_kode_dusun || v_kode_rt || LPAD(v_count::TEXT, 4, '0');
   END IF;
-  
-  -- 3. Kode RT
-  IF p_rt_id IS NOT NULL THEN
-    SELECT kode_rt INTO v_kode_rt FROM rt WHERE id = p_rt_id;
-    v_kode_rt := LPAD(v_kode_rt, 2, '0');
-  ELSE
-    v_kode_rt := '00';
-  END IF;
-  
-  -- 4. Running Number (per RT)
-  SELECT COUNT(*) + 1 INTO v_count
-  FROM anggota
-  WHERE rt_id = p_rt_id 
-    AND status = 'Aktif'
-    AND nomor_anggota_koperasi IS NOT NULL;
-  
-  v_running_number := LPAD(v_count::TEXT, 4, '0');
-  
-  -- 5. Gabungkan
-  v_nomor_anggota := v_prefix || v_kode_dusun || v_kode_rt || v_running_number;
   
   RETURN v_nomor_anggota;
 END;

@@ -849,3 +849,274 @@ export const tolakKonfirmasiBayar = async (req: Request, res: Response) => {
     client.release();
   }
 };
+
+
+/**
+ * Update data anggota oleh admin
+ * PUT /api/anggota/:id/admin-update
+ */
+export const updateAnggotaByAdmin = async (req: Request, res: Response) => {
+  const client = await pool.connect();
+  
+  try {
+    const { id } = req.params;
+    const formData = req.body;
+
+    await client.query('BEGIN');
+
+    // Get current anggota data
+    const anggotaResult = await client.query(
+      'SELECT * FROM anggota WHERE id = $1',
+      [id]
+    );
+
+    if (anggotaResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({
+        success: false,
+        message: 'Anggota tidak ditemukan'
+      });
+    }
+
+    const currentData = anggotaResult.rows[0];
+
+    // Resolve dusun_id dan rt_id untuk warga desa
+    let dusunId: number | null = null;
+    let rtId: number | null = null;
+
+    if (formData.jenis_warga === 'warga_desa') {
+      // Validasi: warga desa harus memiliki dusun dan RT
+      if (!formData.dusun || !formData.rt) {
+        throw new Error('Warga desa harus memilih Dusun dan RT');
+      }
+
+      const dusunResult = await client.query(
+        'SELECT id FROM dusun WHERE nama = $1',
+        [formData.dusun]
+      );
+      
+      if (dusunResult.rows.length === 0) {
+        throw new Error('Dusun tidak ditemukan');
+      }
+      
+      dusunId = dusunResult.rows[0].id;
+
+      const rtResult = await client.query(
+        'SELECT id FROM rt WHERE dusun_id = $1 AND nomor = $2',
+        [dusunId, formData.rt]
+      );
+      
+      if (rtResult.rows.length === 0) {
+        throw new Error('RT tidak ditemukan');
+      }
+      
+      rtId = rtResult.rows[0].id;
+    }
+
+    // Check if NIK is being changed and if new NIK already exists
+    if (formData.nik !== currentData.nik) {
+      const nikCheck = await client.query(
+        'SELECT id FROM anggota WHERE nik = $1 AND id != $2',
+        [formData.nik, id]
+      );
+      
+      if (nikCheck.rows.length > 0) {
+        throw new Error('NIK sudah digunakan oleh anggota lain');
+      }
+    }
+
+    // Check if jenis_warga, dusun_id, or rt_id changed
+    // If anggota is Aktif (has nomor_anggota_koperasi), regenerate nomor anggota
+    let newNomorAnggota: string | null = null;
+    const hasNomorAnggota = currentData.nomor_anggota_koperasi && currentData.status === 'Aktif';
+    
+    if (hasNomorAnggota) {
+      const jenisWargaChanged = formData.jenis_warga !== currentData.jenis_warga;
+      const dusunIdChanged = dusunId !== currentData.dusun_id;
+      const rtIdChanged = rtId !== currentData.rt_id;
+      
+      if (jenisWargaChanged || dusunIdChanged || rtIdChanged) {
+        // Regenerate nomor anggota dengan data baru
+        const nomorAnggotaResult = await client.query(
+          'SELECT generate_nomor_anggota($1, $2, $3) as nomor',
+          [formData.jenis_warga, dusunId, rtId]
+        );
+        newNomorAnggota = nomorAnggotaResult.rows[0].nomor;
+      }
+    }
+
+    // Update anggota data
+    let updateQuery = `
+      UPDATE anggota SET
+        nik = $1,
+        nama_lengkap = $2,
+        jenis_kelamin = $3,
+        tempat_lahir = $4,
+        tanggal_lahir = $5,
+        jenis_warga = $6,
+        alamat = $7,
+        rt = $8,
+        desa = $9,
+        kecamatan = $10,
+        kabupaten = $11,
+        provinsi = $12,
+        dusun_id = $13,
+        rt_id = $14,
+        nomor_rekening = $15,
+        nama_bank = $16,
+        nama_bank_lainnya = $17,
+        atas_nama = $18,
+        nomor_wa = $19,
+        foto_diri = COALESCE($20, foto_diri),
+        foto_ktp = COALESCE($21, foto_ktp)`;
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const values: any[] = [
+      formData.nik,
+      formData.nama_lengkap,
+      formData.jenis_kelamin,
+      formData.tempat_lahir,
+      formData.tanggal_lahir,
+      formData.jenis_warga,
+      formData.alamat,
+      formData.rt,
+      formData.desa,
+      formData.kecamatan,
+      formData.kabupaten,
+      formData.provinsi,
+      dusunId,
+      rtId,
+      formData.nomor_rekening,
+      formData.nama_bank,
+      formData.nama_bank_lainnya || null,
+      formData.atas_nama,
+      formData.nomor_wa,
+      formData.foto_diri || null,
+      formData.foto_ktp || null
+    ];
+
+    // Add nomor_anggota_koperasi if regenerated
+    if (newNomorAnggota) {
+      updateQuery += `, nomor_anggota_koperasi = $${values.length + 1}`;
+      values.push(newNomorAnggota);
+    }
+
+    updateQuery += ` WHERE id = $${values.length + 1} RETURNING *`;
+    values.push(id);
+
+    const result = await client.query(updateQuery, values);
+
+    // Insert history log
+    let catatan = 'Admin memperbarui data anggota';
+    if (newNomorAnggota) {
+      catatan += ` - Nomor anggota diperbarui menjadi ${newNomorAnggota} (perubahan jenis warga/dusun/RT)`;
+    }
+    
+    await insertHistory(
+      client,
+      parseInt(id),
+      currentData.status,
+      currentData.status,
+      'Update Data',
+      catatan,
+      1 // TODO: Get from auth context (admin user ID)
+    );
+
+    await client.query('COMMIT');
+
+    res.json({
+      success: true,
+      message: 'Data anggota berhasil diperbarui',
+      data: result.rows[0]
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error update anggota by admin:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat memperbarui data';
+    
+    res.status(500).json({
+      success: false,
+      message: errorMessage
+    });
+  } finally {
+    client.release();
+  }
+};
+
+
+/**
+ * Reset password anggota oleh admin
+ * PUT /api/anggota/:id/reset-password
+ */
+export const resetPasswordByAdmin = async (req: Request, res: Response) => {
+  const client = await pool.connect();
+  
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password minimal 6 karakter'
+      });
+    }
+
+    await client.query('BEGIN');
+
+    // Get current anggota  data
+    const anggotaResult = await client.query(
+      'SELECT status, nama_lengkap FROM anggota WHERE id = $1',
+      [id]
+    );
+
+    if (anggotaResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({
+        success: false,
+        message: 'Anggota tidak ditemukan'
+      });
+    }
+
+    const currentData = anggotaResult.rows[0];
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await client.query(
+      'UPDATE anggota SET password = $1 WHERE id = $2',
+      [hashedPassword, id]
+    );
+
+    // Insert history log
+    await insertHistory(
+      client,
+      parseInt(id),
+      currentData.status,
+      currentData.status,
+      'Reset Password',
+      'Admin mereset password anggota',
+      1 // TODO: Get from auth context (admin user ID)
+    );
+
+    await client.query('COMMIT');
+
+    res.json({
+      success: true,
+      message: 'Password berhasil direset'
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error reset password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat reset password'
+    });
+  } finally {
+    client.release();
+  }
+};

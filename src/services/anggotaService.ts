@@ -52,6 +52,7 @@ export interface AnggotaProfile {
   rt_nomor?: string;
   nomor_rekening: string;
   nama_bank: string;
+  nama_bank_lainnya?: string;
   atas_nama: string;
   nomor_wa: string;
   username: string;
@@ -128,24 +129,66 @@ const convertFormDataToAPI = async (formData: AnggotaRegisterData) => {
   let foto_diri = null;
   let foto_ktp = null;
   
+  // Check if data is already in snake_case format (from admin edit)
+  const isSnakeCase = 'nama_lengkap' in formData;
+  
   // Convert foto to base64 if exists
-  if (formData.fotoDiri) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (formData.fotoDiri || (formData as any).foto_diri) {
     try {
-      foto_diri = await fileToBase64(formData.fotoDiri);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fotoFile = formData.fotoDiri || (formData as any).foto_diri;
+      if (fotoFile && typeof fotoFile !== 'string') {
+        foto_diri = await fileToBase64(fotoFile);
+      }
     } catch (error) {
       console.error('Error converting foto diri to base64:', error);
     }
   }
 
   // Convert foto KTP to base64 if exists
-  if (formData.fotoKtp) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (formData.fotoKtp || (formData as any).foto_ktp) {
     try {
-      foto_ktp = await fileToBase64(formData.fotoKtp);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fotoFile = formData.fotoKtp || (formData as any).foto_ktp;
+      if (fotoFile && typeof fotoFile !== 'string') {
+        foto_ktp = await fileToBase64(fotoFile);
+      }
     } catch (error) {
       console.error('Error converting foto KTP to base64:', error);
     }
   }
 
+  // If already in snake_case (admin edit), just add photos and return
+  if (isSnakeCase) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = formData as any;
+    return {
+      nik: data.nik?.replace(/\s/g, '') || data.nik,
+      nama_lengkap: data.nama_lengkap,
+      jenis_kelamin: data.jenis_kelamin,
+      tempat_lahir: data.tempat_lahir,
+      tanggal_lahir: data.tanggal_lahir,
+      jenis_warga: data.jenis_warga,
+      alamat: data.alamat,
+      dusun: data.dusun,
+      rt: data.rt,
+      desa: data.desa,
+      kecamatan: data.kecamatan,
+      kabupaten: data.kabupaten,
+      provinsi: data.provinsi,
+      nomor_rekening: data.nomor_rekening,
+      nama_bank: data.nama_bank,
+      nama_bank_lainnya: data.nama_bank_lainnya,
+      atas_nama: data.atas_nama,
+      nomor_wa: data.nomor_wa,
+      foto_diri,
+      foto_ktp
+    };
+  }
+
+  // Convert from camelCase (register form) to snake_case
   return {
     nik: formData.nik.replace(/\s/g, ''), // Remove spaces from NIK
     nama_lengkap: formData.namaLengkap,
@@ -304,6 +347,35 @@ export const anggotaService = {
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       throw new Error(axiosError.response?.data?.message || 'Gagal menolak konfirmasi pembayaran');
+    }
+  },
+
+  /**
+   * Update data anggota oleh admin
+   */
+  updateByAdmin: async (id: number, formData: Partial<AnggotaRegisterData>) => {
+    try {
+      const apiData = await convertFormDataToAPI(formData as AnggotaRegisterData);
+      const response = await axios.put(`${API_BASE_URL}/${id}/admin-update`, apiData);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      throw new Error(axiosError.response?.data?.message || 'Gagal memperbarui data anggota');
+    }
+  },
+
+  /**
+   * Reset password anggota oleh admin
+   */
+  resetPassword: async (id: number, newPassword: string) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/${id}/reset-password`, {
+        newPassword
+      });
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      throw new Error(axiosError.response?.data?.message || 'Gagal reset password');
     }
   }
 };
